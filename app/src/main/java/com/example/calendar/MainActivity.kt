@@ -29,9 +29,16 @@ class MainActivity : AppCompatActivity() {
             val month = (splitedDate[1].toInt() +1).toString()
             val day = splitedDate[2]
 
-            Toast.makeText(this@MainActivity,""+date
-                ,Toast.LENGTH_SHORT).show()
-            Log.d("clickdate->", "date->$month$splitedDate")
+            Log.d("dateTest2",year+month+day)
+
+            val bottomSheet = ScheduleEnrollFragment()
+            bottomSheet.apply {
+                arguments = Bundle().apply{
+                    putString("year", year)
+                    putString("month", month)
+                    putString("day", day)
+                }
+            }.show(supportFragmentManager,bottomSheet.tag)
         }
 
     }
