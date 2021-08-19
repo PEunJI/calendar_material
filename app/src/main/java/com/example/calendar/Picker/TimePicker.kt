@@ -2,64 +2,76 @@ package com.example.calendar.Picker
 
 import android.app.TimePickerDialog
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.R
 
-class TimePicker(mutableLiveData: MutableLiveData<String>, var context: Context, var mHour : Int, var mMinute: Int, startDate : Int=0, endDate : Int=0, startHour : Int =0){
+class TimePicker(
+    var mutableLiveData: MutableLiveData<String>,
+    var context: Context,
+    var mutableStartDate: MutableLiveData<Array<Long>>,
+    var mutableEndDate: MutableLiveData<Array<Long>>,
+    var mutableStartHour: MutableLiveData<Array<Long>>
+) {
+    val mutableEndHour = MutableLiveData<Array<Long>>()
 
-    var startDate : Int =0
-    var endDate : Int =0
-    var startHour : Int =0
 
-    init {
-        this.startDate=startDate
-        this.endDate=endDate
-        this.startHour = startHour
-    }
-    var returnHour =0L
-    var returnMin=0L
+//    init {
+//        mutableEndHour.value = arrayOf(mutableStartHour.value!![0]+1, mutableStartHour.value!![1])
+//    } //endhour = endhour +1 시간으로 초기화
 
-    var endHour="null"
 
+    //시작시간 다이어로그
     val timeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-        mutableLiveData.value  = "${hourOfDay}시 ${minute}분"
-        returnHour=hourOfDay.toLong()
-        returnMin=minute.toLong()
-        endHour = hourOfDay.toString()+minute.toString()
+        mutableLiveData.value = "${hourOfDay}시 ${minute}분"
+        mutableStartHour.value = arrayOf(hourOfDay.toLong(), minute.toLong())
     }
-
-    fun returnStartHour() : Array<Long> {
-        val returns = arrayOf<Long>(returnHour,returnMin)
-
-        if(returnHour==0L || returnMin==0L){
-            returns[0]=mHour.toLong()
-            returns[1]=mMinute.toLong()
-            return returns
-        }
-
-        return returns
-    }
-
-    fun selectOnlyAfterStartTime(){
-        if(this.startDate<this.endDate){
-            return
-        }
-        else {
-            if(startHour>endHour.toInt()){
-                Toast.makeText(context,"종료 시간은 시작 시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-
 
     val timePickerDialog = TimePickerDialog(
         context,
         android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
         timeSetListener,
-        mHour,
-        mMinute,
+        mutableStartHour.value!![0].toInt(),
+        mutableStartHour.value!![1].toInt(),
+        true
+    )
+
+
+    fun selectOnlyAfterStartTime() {
+
+        var startdate_full =
+            ("${mutableStartDate.value!![0]}${mutableStartDate.value!![1]}${mutableStartDate.value!![2]}").toInt()
+        var endate_full =
+            ("${mutableEndDate.value!![0]}${mutableEndDate.value!![1]}${mutableEndDate.value!![2]}").toInt()
+        var startHour_full =
+            ("${mutableStartHour.value!![0]}${mutableStartHour.value!![1]}").toInt()
+
+
+        if (startdate_full < endate_full) {
+            return
+        } else {
+            if (startHour_full > ("${mutableEndHour.value!![0]}${mutableEndHour.value!![1]}").toInt()) {
+                mutableLiveData.value =
+                    "${mutableStartHour.value!![0]+1}시 ${mutableStartHour.value!![1]}분"
+                Toast.makeText(context, "종료시간은 시작시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    val timeSetListener_end = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+        mutableLiveData.value = "${hourOfDay}시 ${minute}분"
+        mutableEndHour.value = arrayOf(hourOfDay.toLong(), minute.toLong())
+        selectOnlyAfterStartTime()
+    }
+
+    val timePickerDialog_end = TimePickerDialog(
+        context,
+        android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
+        timeSetListener_end,
+        mutableStartHour.value!![0].toInt() + 1,
+        mutableStartHour.value!![1].toInt(),
         true
     )
 }

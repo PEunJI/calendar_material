@@ -17,6 +17,7 @@ import com.example.calendar.databinding.FragmentScheduleEnrollBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ScheduleEnrollFragment : BottomSheetDialogFragment() {
@@ -67,72 +68,72 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         start_liveHour.value = "${mHour}시 ${mMinute}분"
         end_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
         end_liveHour.value = "${mHour + 1}시 ${mMinute}분"
-        Log.d("dateTest2","${mMonth}월")
+        Log.d("dateTest2", "${mMonth}월")
         binding.btnCancle.setOnClickListener {
             dismiss()
         }
+        val returnStartDay = MutableLiveData<Array<Long>>()
+        returnStartDay.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
 
-        val startdate_picker = DatePicker(start_liveDate, get_context, mYear, mMonth, mDay)
-        val starthour_picker = TimePicker(start_liveHour, get_context, mHour, mMinute)
-        val enddate_picker = DatePicker(end_liveDate, get_context, mYear, mMonth, mDay)
+        val returnEndDate = MutableLiveData<Array<Long>>()
+        returnEndDate.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
 
-        var returnStartDay: Array<Long> = arrayOf(0, 0, 0)
+        val returnStartHour = MutableLiveData<Array<Long>>()
+        returnStartHour.value = arrayOf(mHour.toLong(), mMinute.toLong())
 
+        val returnEndHour = MutableLiveData<Array<Long>>()
+        returnEndHour.value = arrayOf(mHour.toLong() + 1, mMinute.toLong())
+
+
+        val startdate_picker =
+            DatePicker(mutableLiveData = start_liveDate, returnStartDay = returnStartDay,context = get_context,mYear = mYear,mMonth = mMonth,mDay = mDay,mutableLiveData_end=end_liveDate)
+        val enddate_picker =
+            DatePicker(mutableLiveData = end_liveDate, returnStartDay = returnEndDate, context = get_context, mYear= mYear, mMonth = mMonth, mDay = mDay)
+        val starthour_picker =
+            TimePicker(start_liveHour, get_context, returnStartDay, returnEndDate, returnStartHour)
+
+        //시작 날짜 눌렀을 때 datepicker띄우기
         binding.startDatePicker.setOnClickListener {
             startdate_picker.datePickerDialog.show()
-            returnStartDay = startdate_picker.returnStartDate()
         }
-        var returnStartHour: Array<Long> = arrayOf(0, 0, 0)
+
+        //시작 시간 눌렀을 때 timepicker띄우기
         binding.startTimePicker.setOnClickListener {
 
             starthour_picker.timePickerDialog.apply {
                 this.window!!.setBackgroundDrawableResource(android.R.color.transparent)
             }.show()
-            returnStartHour = starthour_picker.returnStartHour()
         }
 
-        var returnEndDate: Array<Long> = arrayOf(0, 0, 0)
-
+        //종료 날짜 눌렀을 때 datepicker띄우기
         binding.endDatePicker.setOnClickListener {
             //종료 날짜는 시작날짜 이후로만 선택되게
 
             //날짜 String->dateFormat->TimeMillis()
             var date =
-                "${returnStartDay[0]}-${returnStartDay[1]}-${returnStartDay[2]} ${returnStartHour[0]}:${returnStartHour[1]}"
+                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            Log.d("dateLog", "" + returnStartDay.value!![2])
             val dateFormat = simpleDateFormat.parse(date)
-            enddate_picker.datePickerDialog.apply {
-                datePicker.minDate = (dateFormat.time) - 1000
-            }.show()
-            returnEndDate = enddate_picker.returnStartDate()
-            Log.d("dateTestt",date)
-        }
-        var returnEndHour: Array<Long> = arrayOf(0L)
 
-        var startDateFull = "${returnStartDay[0]}${returnStartDay[1]}${returnStartDay[2]}"
-        var startHourFull = "${returnStartHour[0]}${returnStartHour[1]}"
-        var endDateFull = "${returnEndDate[0]}${returnEndDate[1]}${returnEndDate[2]}"
+            enddate_picker.datePickerDialog.apply {
+                datePicker.minDate = (dateFormat.time)
+            }.show()
+            Log.d("dateTest", date)
+        }
 
         val endhour_picker = TimePicker(
             end_liveHour,
             get_context,
-            mHour + 1,
-            mMinute,
-            startDateFull.toInt(),
-            endDateFull.toInt(),
-            startHourFull.toInt()
+            returnStartDay,
+            returnEndDate,
+            returnStartHour
         )
 
 
         //종료 시간은 시작 시간 이후로만 선택되게 하고 싶지만 커스텀해야하는 것 같다. 구찮다. 그냥 토스트를 띄우고 스타트타임+1시간으로 고정시키자
         binding.endTimePicker.setOnClickListener {
-
-            endhour_picker.timePickerDialog.apply {
-                endhour_picker.timeSetListener.apply {
-                    endhour_picker.selectOnlyAfterStartTime()
-                }
-            }.show()
-            returnEndHour = endhour_picker.returnStartHour()
+            endhour_picker.timePickerDialog_end.show()
         }
 
         return binding.root

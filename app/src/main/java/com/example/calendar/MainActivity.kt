@@ -1,14 +1,19 @@
 package com.example.calendar
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
+import com.example.calendar.ColoredDate.AlldayDecorator
 import com.example.calendar.ColoredDate.SaturdayDecorator
 import com.example.calendar.ColoredDate.SundayDecorator
+import com.example.calendar.ColoredDate.TodayDecorator
 import com.example.calendar.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -16,8 +21,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.calendarView.addDecorators(
             SundayDecorator(),
-            SaturdayDecorator()
+            SaturdayDecorator(),
+            TodayDecorator(Context@this),
+            AlldayDecorator()
         )
+
+
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
             var selectedDate :String = ""+date
             selectedDate = selectedDate.substring(11)
