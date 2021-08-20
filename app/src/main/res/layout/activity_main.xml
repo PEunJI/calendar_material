@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.appcompat.widget.LinearLayoutCompat
-    android:layout_height="match_parent"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
     android:layout_gravity="center_vertical"
-    >
+    android:orientation="vertical">
 
-<com.prolificinteractive.materialcalendarview.MaterialCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/calendarView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:mcv_selectionColor="#CDDC39"
-    app:mcv_showOtherDates="all"
-    android:layout_gravity="center_vertical"
-    />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/custom_toolbar"></include>
+
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        app:mcv_selectionColor="#CDDC39"
+        app:mcv_showOtherDates="all" />
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -12,6 +12,7 @@ import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
 import com.example.calendar.kakaoLogin.KakaoSDKInit
 import com.kakao.sdk.user.UserApiClient
+import java.net.URL
 
 class KakaoLogin : AppCompatActivity() {
     private lateinit var binding: ActivityKakaoLoginBinding
@@ -25,14 +26,10 @@ class KakaoLogin : AppCompatActivity() {
             //로그인 실패
             if (error != null) {
                 Log.e("kakaoLogin", "Kakao Login Failed :", error)
-                updateKakaoLoginUi()
                 //로그인 성공
             } else if (token != null) {
-                updateKakaoLoginUi()
-                binding.profileImage.setOnClickListener {
-                    startMainActivity()
-                }
             }
+            updateKakaoLoginUi()
         }
 
         //로그인 버튼
@@ -53,7 +50,9 @@ class KakaoLogin : AppCompatActivity() {
                 updateKakaoLoginUi()
             }
         }
+    }
 
+    private fun checkToken() {
         //토큰정보
         UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
             if (error != null) {
@@ -69,37 +68,29 @@ class KakaoLogin : AppCompatActivity() {
     }
 
 
+
     private fun updateKakaoLoginUi() {
         UserApiClient.instance.me { user, error ->
             //로그인이 되어 있을 때
             if (user != null) {
-                binding.btnKakaoLogin.visibility = View.GONE
-                binding.btnLogout.visibility = View.VISIBLE
-
-                Log.d("kakaoLogin", "invoke: id =" + user.id)
-                Log.d("kakaoLogin", "invoke: email =" + user.kakaoAccount!!.email)
-                Log.d("kakaoLogin", "invoke: nickname =" + user.kakaoAccount!!.profile!!.nickname)
-                Log.d("kakaoLogin", "invoke: gender =" + user.kakaoAccount!!.gender)
-                Log.d("kakaoLogin", "invoke: ageRange =" + user.kakaoAccount!!.ageRange)
-
-                binding.nickname.text = user.kakaoAccount!!.profile!!.nickname
-                //글라이드를 이용하여 카카오프로필사진 url 을 이미지뷰에 넣는다.
-                Glide.with(binding.profileImage)
-                    .load(user.kakaoAccount!!.profile!!.thumbnailImageUrl).circleCrop()
-                    .into(binding.profileImage)
-                Log.d("profile", user.kakaoAccount!!.profile!!.thumbnailImageUrl.toString())
+                checkToken()
+                startMainActivity(user.kakaoAccount!!.profile!!.thumbnailImageUrl!!)
             } else {
                 binding.btnKakaoLogin.visibility = View.VISIBLE
                 binding.btnLogout.visibility = View.GONE
-                binding.nickname.text = null
-                binding.profileImage.setImageDrawable(null)
+                binding.profileImage.setImageResource(R.drawable.ic_calendar)
             }
         }
     }
 
 
-    private fun startMainActivity() {
-        startActivity(Intent(this, MainActivity::class.java))
+    private fun startMainActivity(url : String) {
+        val intent = Intent(this, MainActivity::class.java)
+
+        intent.apply {
+            this.putExtra("profile",url)
+        }
+        startActivity(intent)
     }
 }
 
