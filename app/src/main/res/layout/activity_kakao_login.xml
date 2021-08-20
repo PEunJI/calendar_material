@@ -31,13 +31,16 @@
     </LinearLayout>
 
     <ImageButton
-
+        android:padding="10dp"
+        android:background="@android:color/transparent"
         android:id="@+id/btn_kakaoLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/kakao_login_medium_narrow"/>
 
     <Button
+        android:padding="10dp"
+        android:background="@android:color/transparent"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

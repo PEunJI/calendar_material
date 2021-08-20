@@ -29,15 +29,13 @@ class KakaoLogin : AppCompatActivity() {
                 //로그인 성공
             } else if (token != null) {
                 updateKakaoLoginUi()
-
-                binding.profileImage.setOnClickListener{
+                binding.profileImage.setOnClickListener {
                     startMainActivity()
                 }
             }
-
         }
 
-
+        //로그인 버튼
         binding.btnKakaoLogin.setOnClickListener {
             //카카오톡이 깔려있으면 카카오톡으로 로그인
             //로그인 결과(토큰값이 있으면 로그인 성공한것임)는 콜백으로 수행
@@ -53,6 +51,19 @@ class KakaoLogin : AppCompatActivity() {
         binding.btnLogout.setOnClickListener {
             UserApiClient.instance.logout {
                 updateKakaoLoginUi()
+            }
+        }
+
+        //토큰정보
+        UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
+            if (error != null) {
+                Log.e("kakaoLogin", "토큰 정보 보기 실패", error)
+            } else if (tokenInfo != null) {
+                Log.i(
+                    "kakaoLogin", "토큰 정보 보기 성공" +
+                            "\n회원번호: ${tokenInfo.id}" +
+                            "\n만료시간: ${tokenInfo.expiresIn} 초"
+                )
             }
         }
     }
@@ -76,7 +87,7 @@ class KakaoLogin : AppCompatActivity() {
                 Glide.with(binding.profileImage)
                     .load(user.kakaoAccount!!.profile!!.thumbnailImageUrl).circleCrop()
                     .into(binding.profileImage)
-
+                Log.d("profile", user.kakaoAccount!!.profile!!.thumbnailImageUrl.toString())
             } else {
                 binding.btnKakaoLogin.visibility = View.VISIBLE
                 binding.btnLogout.visibility = View.GONE
@@ -86,9 +97,9 @@ class KakaoLogin : AppCompatActivity() {
         }
     }
 
+
     private fun startMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
     }
-
 }
 
