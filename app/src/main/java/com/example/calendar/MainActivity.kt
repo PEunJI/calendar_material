@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 md.update(signature.toByteArray())
                 val str: String = Base64.encodeToString(md.digest(), Base64.DEFAULT)
                 Log.d("KeyHash:", str)
-                Toast.makeText(this, str, Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, str, Toast.LENGTH_LONG).show()
             }
         } catch (e: NoSuchAlgorithmException) {
             e.printStackTrace()
