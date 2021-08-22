@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.TimePicker
-import com.example.calendar.databinding.ActivityMainBinding
 import com.example.calendar.databinding.FragmentScheduleEnrollBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat

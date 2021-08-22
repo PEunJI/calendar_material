@@ -3,19 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/drawable/custum_toolbar.xml" value="0.2638888888888889" />
-        <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.3611111111111111" />
-        <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/drawable/ic_circular_counterclockwise_arrow_rotation.xml" value="0.3611111111111111" />
-        <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/drawable/ic_plus.xml" value="0.3611111111111111" />
         <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/drawable/todaybgr.xml" value="0.2351851851851852" />
         <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/layout/activity_kakao_login.xml" value="0.12228260869565218" />
         <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/layout/activity_main.xml" value="0.20208333333333334" />
-        <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/layout/custom_toolbar.xml" value="0.16767983789260385" />
         <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/layout/fragment_schedule_enroll.xml" value="0.15780141843971632" />
-        <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/layout/kakaologin.xml" value="0.2" />
-        <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/menu/toobar_menu.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/layout/activity_base.xml" value="0.24728260869565216" />
+        <entry key="app/src/main/res/layout/activity_kakao_login.xml" value="0.24728260869565216" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.125" />
+        <entry key="app/src/main/res/layout/activity_oneday_schedules.xml" value="0.24728260869565216" />
+        <entry key="app/src/main/res/layout/custom_toolbar.xml" value="0.14114583333333333" />
         <entry key="app/src/main/res/layout/fragment_schedule_enroll.xml" value="0.1328125" />
+        <entry key="app/src/main/res/layout/main_nav_header.xml" value="0.1947463768115942" />
+        <entry key="app/src/main/res/menu/main_navigation_menu.xml" value="0.14114583333333333" />
+        <entry key="app/src/main/res/menu/toobar_menu.xml" value="0.14114583333333333" />
       </map>
     </option>
   </component>

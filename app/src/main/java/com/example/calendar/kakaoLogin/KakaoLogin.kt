@@ -5,14 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.bumptech.glide.Glide
-import com.example.calendar.MainActivity
+import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.R
 import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
-import com.example.calendar.kakaoLogin.KakaoSDKInit
 import com.kakao.sdk.user.UserApiClient
-import java.net.URL
 
 class KakaoLogin : AppCompatActivity() {
     private lateinit var binding: ActivityKakaoLoginBinding
@@ -44,13 +41,8 @@ class KakaoLogin : AppCompatActivity() {
             }
         }
 
-        //로그아웃 버튼
-        binding.btnLogout.setOnClickListener {
-            UserApiClient.instance.logout {
-                updateKakaoLoginUi()
-            }
         }
-    }
+
 
     private fun checkToken() {
         //토큰정보
@@ -74,21 +66,21 @@ class KakaoLogin : AppCompatActivity() {
             //로그인이 되어 있을 때
             if (user != null) {
                 checkToken()
-                startMainActivity(user.kakaoAccount!!.profile!!.thumbnailImageUrl!!)
+                startMainActivity(user.kakaoAccount!!.profile!!.thumbnailImageUrl!!,user.kakaoAccount!!.profile!!.nickname!!)
             } else {
                 binding.btnKakaoLogin.visibility = View.VISIBLE
-                binding.btnLogout.visibility = View.GONE
                 binding.profileImage.setImageResource(R.drawable.ic_calendar)
             }
         }
     }
 
 
-    private fun startMainActivity(url : String) {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun startMainActivity(url : String, nickname: String) {
+        val intent = Intent(this, BaseActivity::class.java)
 
         intent.apply {
             this.putExtra("profile",url)
+            this.putExtra("profile_nickname",nickname)
         }
         startActivity(intent)
     }

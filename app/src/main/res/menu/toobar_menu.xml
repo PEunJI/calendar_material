@@ -18,5 +18,4 @@
         android:title="toolbar_plus"
         app:showAsAction="always" />
 
-
 </menu>

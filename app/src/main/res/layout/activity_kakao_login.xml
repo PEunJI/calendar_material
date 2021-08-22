@@ -33,14 +33,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/kakao_login_medium_narrow"/>
 
-    <Button
-        android:padding="10dp"
-        android:background="@android:color/transparent"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_Logout"
-        android:text="로그아웃"/>
+
 
 
 

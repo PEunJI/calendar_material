@@ -13,10 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Calendar">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
+            android:name=".BaseActivity.BaseActivity"
+            android:exported="true" />
+        <activity
+            android:name=".OnedaySchedulesFragment"
+            android:exported="true" />
 
         <activity
             android:name=".kakaoLogin.KakaoLogin"
@@ -27,7 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
