@@ -1,8 +1,10 @@
 package com.example.calendar.kakaoLogin
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import com.example.calendar.BaseActivity.BaseActivity
@@ -10,6 +12,8 @@ import com.example.calendar.R
 import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 class KakaoLogin : AppCompatActivity() {
     private lateinit var binding: ActivityKakaoLoginBinding
@@ -18,6 +22,30 @@ class KakaoLogin : AppCompatActivity() {
         binding = ActivityKakaoLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         updateKakaoLoginUi()
+
+
+        //해쉬키
+        try {
+            val info = packageManager.getPackageInfo(
+                "com.example.calendar",
+                PackageManager.GET_SIGNATURES
+            )
+            for (signature in info.signatures) {
+                val md: MessageDigest = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                val str: String = Base64.encodeToString(md.digest(), Base64.DEFAULT)
+                Log.d("KeyHash:", str)
+            }
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        //
+
+
+
+
         //로그인 성공/실패 시 콜백
         val callback: ((OAuthToken?, Throwable?) -> Unit) = { token, error ->
             //로그인 실패

@@ -18,10 +18,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.FragmentResultOwner
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.calendar.CalendarFragment
 import com.example.calendar.R
 import com.example.calendar.ScheduleEnrollFragment
+import com.example.calendar.Viewmodel.MyViewModel
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
@@ -36,34 +38,25 @@ import java.security.NoSuchAlgorithmException
 import java.util.*
 
 class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-     var calendarFragment = CalendarFragment()
+    var calendarFragment = CalendarFragment()
     private lateinit var binding: ActivityBaseBinding
+    lateinit var viewModel: MyViewModel
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        //ViewModel 인스턴스 생성
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        ).get(MyViewModel::class.java)
+        viewModel.date
 
         //초기 프래그먼트 캘린더프래그먼트로 지정
-        replaceFragment(calendarFragment,"calendar")
+        replaceFragment(calendarFragment, "calendar")
 
-        //해쉬키
-        try {
-            val info = packageManager.getPackageInfo(
-                "com.example.calendar",
-                PackageManager.GET_SIGNATURES
-            )
-            for (signature in info.signatures) {
-                val md: MessageDigest = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val str: String = Base64.encodeToString(md.digest(), Base64.DEFAULT)
-                Log.d("KeyHash:", str)
-            }
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        //
 
         //툴바사
         val profile_image = intent.getStringExtra("profile")
@@ -115,11 +108,12 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     val calendar = Calendar.getInstance();
     val bottomSheet = ScheduleEnrollFragment()
+
     //현재 프래그먼트
-    fun getFragment(tag:String) : Fragment?{
-    val fragment = supportFragmentManager.findFragmentByTag(tag)
-    return fragment
-         }
+    fun getFragment(tag: String): Fragment? {
+        val fragment = supportFragmentManager.findFragmentByTag(tag)
+        return fragment
+    }
 
     //커스텀 툴바 메뉴 눌렀을 때
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -138,22 +132,23 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     e.printStackTrace();
                 }
             R.id.toolbar_schedules ->
-                Log.d("frag","")
+                Log.d("frag", "")
 
             R.id.toolbar_plus ->
                 //plus 눌렀을 때 달력 프래그먼트면 오늘 날짜로 일정입력 bottomfragment 띄우
-            if(getFragment("calendar") is CalendarFragment){
-                val bottomSheet = ScheduleEnrollFragment()
-            bottomSheet.apply {
-                arguments = Bundle().apply {
-                    putString("year", calendar.get(Calendar.YEAR).toString())
-                    putString("month", calendar.get(Calendar.MONTH).toString())
-                    putString("day", calendar.get(Calendar.DATE).toString())
+                if (getFragment("calendar") is CalendarFragment) {
+                    val bottomSheet = ScheduleEnrollFragment()
+                    bottomSheet.apply {
+                        arguments = Bundle().apply {
+                            putString("year", calendar.get(Calendar.YEAR).toString())
+                            putString("month", calendar.get(Calendar.MONTH).toString())
+                            putString("day", calendar.get(Calendar.DATE).toString())
+                        }
+                    }.show(supportFragmentManager, bottomSheet.tag)
                 }
-            }.show(supportFragmentManager, bottomSheet.tag)
-            }
                 //onedayshcedulefragment면, 그날 날짜로 bottomfragment 띄우
-                else{}
+                else {
+                }
 
         }
         return true
@@ -172,7 +167,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     //fragment 전환 함수
-    fun replaceFragment(fragment: Fragment, tag : String) {
+    fun replaceFragment(fragment: Fragment, tag: String) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame, fragment, tag).commit()

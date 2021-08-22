@@ -31,6 +31,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.databinding.CalendarFragBinding
@@ -38,6 +39,7 @@ import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.google.android.material.navigation.NavigationView
 import com.kakao.sdk.user.UserApiClient
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,6 +72,7 @@ class CalendarFragment : Fragment() {
         binding = CalendarFragBinding.inflate(inflater, container, false)
         val view = binding.root
 
+
         //캘린더뷰에 날짜별로 색상 다르게 하는 decorator달기
         binding.calendarView.addDecorators(
             SundayDecorator(),
@@ -77,11 +80,18 @@ class CalendarFragment : Fragment() {
             TodayDecorator(get_context),
             AlldayDecorator()
         )
-        binding.calendarView.setOnDateChangedListener{widget, date, selected ->
-            (activity as BaseActivity).replaceFragment(OnedaySchedulesFragment.newInstance(),"schedules")
+
+
+
+        binding.calendarView.setOnDateChangedListener { widget, date, selected ->
+            selctedDate = date.toString()
+
+            (activity as BaseActivity).replaceFragment(
+                OnedaySchedulesFragment.newInstance(),
+                "schedules"
+            )
 
         }
-
 
         return view
 
@@ -89,16 +99,7 @@ class CalendarFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-//달력 날짜 누르면 프래그먼트 전환
-  //      binding.calendarView.setOnDateChangedListener { widget, date, selected ->
-          //  val selectedDate = date.toString()
-        val selectedDate = "babo"
-            val bundle = bundleOf("date" to selectedDate)
-            setFragmentResult("give_date",bundle)
-
-     //   }
-
-        }
+    }
 
 
     companion object {
@@ -106,6 +107,8 @@ class CalendarFragment : Fragment() {
 
             return CalendarFragment()
         }
+
+        var selctedDate = "null"
     }
 }
 
