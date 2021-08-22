@@ -23,7 +23,6 @@ import com.bumptech.glide.Glide
 import com.example.calendar.CalendarFragment
 import com.example.calendar.R
 import com.example.calendar.ScheduleEnrollFragment
-import com.example.calendar.Viewmodel.MyViewModel
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
@@ -40,7 +39,6 @@ import java.util.*
 class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     var calendarFragment = CalendarFragment()
     private lateinit var binding: ActivityBaseBinding
-    lateinit var viewModel: MyViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,11 +46,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
         //ViewModel 인스턴스 생성
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        ).get(MyViewModel::class.java)
-        viewModel.date
+
 
         //초기 프래그먼트 캘린더프래그먼트로 지정
         replaceFragment(calendarFragment, "calendar")
@@ -141,13 +135,21 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     bottomSheet.apply {
                         arguments = Bundle().apply {
                             putString("year", calendar.get(Calendar.YEAR).toString())
-                            putString("month", calendar.get(Calendar.MONTH).toString())
+                            putString("month", (calendar.get(Calendar.MONTH)+1).toString())
                             putString("day", calendar.get(Calendar.DATE).toString())
                         }
                     }.show(supportFragmentManager, bottomSheet.tag)
                 }
                 //onedayshcedulefragment면, 그날 날짜로 bottomfragment 띄우
                 else {
+                    val bottomSheet = ScheduleEnrollFragment()
+                    bottomSheet.apply {
+                        arguments = Bundle().apply {
+                            putString("year", CalendarFragment.selctedDate.year.toString())
+                            putString("month", (CalendarFragment.selctedDate.month+1).toString())
+                            putString("day",  CalendarFragment.selctedDate.day.toString())
+                        }
+                    }.show(supportFragmentManager, bottomSheet.tag)
                 }
 
         }

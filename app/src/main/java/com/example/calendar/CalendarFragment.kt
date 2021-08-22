@@ -84,7 +84,7 @@ class CalendarFragment : Fragment() {
 
 
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
-            selctedDate = date.toString()
+            selctedDate = date
 
             (activity as BaseActivity).replaceFragment(
                 OnedaySchedulesFragment.newInstance(),
@@ -108,7 +108,7 @@ class CalendarFragment : Fragment() {
             return CalendarFragment()
         }
 
-        var selctedDate = "null"
+        var selctedDate = CalendarDay.today()
     }
 }
 

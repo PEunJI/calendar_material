@@ -12,6 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.calendar.Adapter.RecyclerViewAdapter
+import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
 
@@ -39,9 +43,13 @@ class OnedaySchedulesFragment : Fragment() {
     ): View? {
         binding = ActivityOnedaySchedulesBinding.inflate(inflater, container, false)
         val view = binding.root
+        binding.txtSelectedDate.text = ""+CalendarFragment.selctedDate.year+"년 "+(CalendarFragment.selctedDate.month+1)+"월 "+CalendarFragment.selctedDate.day+"일"
 
-        binding.txtSelectedDate.text = CalendarFragment.selctedDate
 
+        //recyclerview 달기
+        val adapter = RecyclerViewAdapter(ScheduleList.scheduleList, LayoutInflater.from(get_context))
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
 
         return view
 
