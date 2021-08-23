@@ -103,11 +103,6 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val calendar = Calendar.getInstance();
     val bottomSheet = ScheduleEnrollFragment()
 
-    //현재 프래그먼트
-    fun getFragment(tag: String): Fragment? {
-        val fragment = supportFragmentManager.findFragmentByTag(tag)
-        return fragment
-    }
 
     //커스텀 툴바 메뉴 눌렀을 때
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -135,7 +130,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     bottomSheet.apply {
                         arguments = Bundle().apply {
                             putString("year", calendar.get(Calendar.YEAR).toString())
-                            putString("month", (calendar.get(Calendar.MONTH)+1).toString())
+                            putString("month", (calendar.get(Calendar.MONTH) + 1).toString())
                             putString("day", calendar.get(Calendar.DATE).toString())
                         }
                     }.show(supportFragmentManager, bottomSheet.tag)
@@ -146,8 +141,8 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     bottomSheet.apply {
                         arguments = Bundle().apply {
                             putString("year", CalendarFragment.selctedDate.year.toString())
-                            putString("month", (CalendarFragment.selctedDate.month+1).toString())
-                            putString("day",  CalendarFragment.selctedDate.day.toString())
+                            putString("month", (CalendarFragment.selctedDate.month + 1).toString())
+                            putString("day", CalendarFragment.selctedDate.day.toString())
                         }
                     }.show(supportFragmentManager, bottomSheet.tag)
                 }
@@ -168,11 +163,31 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+
+
     //fragment 전환 함수
     fun replaceFragment(fragment: Fragment, tag: String) {
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.frame, fragment, tag).commit()
+         BaseActivity.fragmentManager = supportFragmentManager
+        val fragmentTransaction =  BaseActivity.fragmentManager!!.beginTransaction()
+            fragmentTransaction.replace(R.id.frame, fragment, tag).addToBackStack(null).commit()
+
     }
+
+    //현재 프래그먼트
+    fun getFragment(tag: String): Fragment? {
+        val fragment = supportFragmentManager.findFragmentByTag(tag)
+        return fragment
+    }
+
+    override fun onBackPressed() {
+        if(supportFragmentManager.findFragmentById(R.id.frame) is CalendarFragment){
+            android.os.Process.killProcess(android.os.Process.myPid())
+        }
+    }
+
+    companion object{
+        var fragmentManager : FragmentManager? = null
+    }
+
 
 }

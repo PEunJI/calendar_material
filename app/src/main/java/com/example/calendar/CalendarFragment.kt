@@ -30,28 +30,39 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.calendar.BaseActivity.BaseActivity
+import com.example.calendar.Model.Calendar
+import com.example.calendar.Retrofit.RetrofitService.Companion.service
+import com.example.calendar.api.CalendarService
 import com.example.calendar.databinding.CalendarFragBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.google.android.material.navigation.NavigationView
 import com.kakao.sdk.user.UserApiClient
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.awaitResponse
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Url
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.time.LocalDate
+import java.time.LocalDate.now
 import java.util.*
+import kotlin.collections.HashMap
 
 
-class CalendarFragment : Fragment() {
+class CalendarFragment : Fragment(){
     private lateinit var binding: CalendarFragBinding
     private lateinit var get_context: Activity
 
@@ -68,7 +79,33 @@ class CalendarFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+//practice
 
+        GlobalScope.launch {
+            var input = HashMap<String, Any>()
+            input["dateStart"] = "2021-08-25 00:00:00"
+            input["dateEnd"] = "2021-08-26 00:10:00"
+            input["content"] = "study2"
+            service.putCalendar("2","111",input)
+
+
+//            val response = service.getCalendar("111")
+//            Log.e("sal yo zo", response.body().toString())
+//            var cal = response.body()!!
+//            for (i in cal.result){
+//                i.
+//            }
+
+//            var input = HashMap<String, Any>()
+//            input["dateStart"] = "2021-08-23 00:00:00"
+//            input["dateEnd"] = "2021-08-23 00:10:00"
+//            input["content"] = "study"
+//
+//            service.postCalendar("1000", input)
+//            val response2 = service.getCalendar("1000")
+//            Log.e("sal yo zo", response2.body().toString())
+        }
+//pracitce
         binding = CalendarFragBinding.inflate(inflater, container, false)
         val view = binding.root
 
@@ -93,6 +130,8 @@ class CalendarFragment : Fragment() {
 
         }
 
+
+
         return view
 
     }
@@ -109,7 +148,10 @@ class CalendarFragment : Fragment() {
         }
 
         var selctedDate = CalendarDay.today()
+
     }
+
+
 }
 
 

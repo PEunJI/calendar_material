@@ -45,6 +45,9 @@ class OnedaySchedulesFragment : Fragment() {
         val view = binding.root
         binding.txtSelectedDate.text = ""+CalendarFragment.selctedDate.year+"년 "+(CalendarFragment.selctedDate.month+1)+"월 "+CalendarFragment.selctedDate.day+"일"
 
+        val test = ScheduleList("은지랑 놀기 ","2012년 12월 30일 10:30","2012년 12월 30일 11:30","메모메모")
+        ScheduleList.scheduleList.add(test)
+
 
         //recyclerview 달기
         val adapter = RecyclerViewAdapter(ScheduleList.scheduleList, LayoutInflater.from(get_context))

@@ -81,7 +81,8 @@ class KakaoLogin : AppCompatActivity() {
                 Log.i(
                     "kakaoLogin", "토큰 정보 보기 성공" +
                             "\n회원번호: ${tokenInfo.id}" +
-                            "\n만료시간: ${tokenInfo.expiresIn} 초"
+                            "\n만료시간: ${tokenInfo.expiresIn} 초"+
+                            "\n만료시간: ${tokenInfo.appId} "
                 )
             }
         }
