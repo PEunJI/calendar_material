@@ -1,19 +1,31 @@
 package com.example.calendar
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.TimePicker
+import com.example.calendar.Retrofit.RetrofitService.Companion.service
 import com.example.calendar.databinding.FragmentScheduleEnrollBinding
+import com.example.calendar.kakaoLogin.KakaoLogin
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -45,6 +57,22 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         mYear = arguments?.getString("year")!!.toInt()
         mMonth = arguments?.getString("month")!!.toInt()
         mDay = arguments?.getString("day")!!.toInt()
+
+    }
+
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val bottomSheetDialog = BottomSheetDialog(
+            requireContext(),
+            theme
+        )
+        bottomSheetDialog.setOnShowListener { dialog ->
+            val bottomSheet =
+                (bottomSheetDialog).findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            val behavior = BottomSheetBehavior.from<View>(bottomSheet!!)
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+        return bottomSheetDialog
 
     }
 
@@ -85,9 +113,24 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
 
         val startdate_picker =
-            DatePicker(mutableLiveData = start_liveDate, returnStartDay = returnStartDay,context = get_context,mYear = mYear,mMonth = mMonth,mDay = mDay,mutableLiveData_end=end_liveDate)
+            DatePicker(
+                mutableLiveData = start_liveDate,
+                returnStartDay = returnStartDay,
+                context = get_context,
+                mYear = mYear,
+                mMonth = mMonth,
+                mDay = mDay,
+                mutableLiveData_end = end_liveDate
+            )
         val enddate_picker =
-            DatePicker(mutableLiveData = end_liveDate, returnStartDay = returnEndDate, context = get_context, mYear= mYear, mMonth = mMonth, mDay = mDay)
+            DatePicker(
+                mutableLiveData = end_liveDate,
+                returnStartDay = returnEndDate,
+                context = get_context,
+                mYear = mYear,
+                mMonth = mMonth,
+                mDay = mDay
+            )
         val starthour_picker =
             TimePicker(start_liveHour, get_context, returnStartDay, returnEndDate, returnStartHour)
 
@@ -135,7 +178,48 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
             endhour_picker.timePickerDialog_end.show()
         }
 
+        //취소버튼
+        binding.btnCancle.setOnClickListener {
+            dismiss()
+        }
+
+        //저장버튼
+        binding.btnEnroll.setOnClickListener {
+            var input = HashMap<String, String>()
+
+            //시간체크
+            if (
+                (start_liveDate.value.toString() + start_liveHour.value.toString()).replace(
+                    ("[^\\d.]").toRegex(),
+                    ""
+                ).toLong() >
+                (end_liveDate.value.toString() + end_liveHour.value.toString()).replace(
+                    ("[^\\d.]").toRegex(),
+                    ""
+                ).toLong()
+            ) {
+                Toast.makeText(get_context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                //제목이 null일때
+                if (binding.txtTitle.text.toString() == "") {
+                    Toast.makeText(get_context, "제목은 필수입니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    //등록
+                    GlobalScope.launch {
+                        input["dateStart"] =
+                            "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                        input["dateEnd"] =
+                            "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+                        input["content"] =
+                            binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
+                        service.postCalendar("${KakaoLogin.user_id}", input)
+                    }
+                    dismiss()
+                }
+            }
+        }
         return binding.root
     }
+
 }
 

@@ -18,11 +18,13 @@ import com.example.calendar.Adapter.RecyclerViewAdapter
 import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import java.text.SimpleDateFormat
 
 class OnedaySchedulesFragment : Fragment() {
     private lateinit var binding: ActivityOnedaySchedulesBinding
     private lateinit var get_context: Activity
-    private lateinit var selectedDate : String
+    private lateinit var selectedDate: String
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Activity) {
@@ -30,9 +32,10 @@ class OnedaySchedulesFragment : Fragment() {
         }
     }
 
-    //달력 fragment에서 받은 날짜 데이터 받
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        /**스케줄 가져오기**/
+        ScheduleList.getScheules()
     }
 
 
@@ -43,14 +46,31 @@ class OnedaySchedulesFragment : Fragment() {
     ): View? {
         binding = ActivityOnedaySchedulesBinding.inflate(inflater, container, false)
         val view = binding.root
-        binding.txtSelectedDate.text = ""+CalendarFragment.selctedDate.year+"년 "+(CalendarFragment.selctedDate.month+1)+"월 "+CalendarFragment.selctedDate.day+"일"
+        binding.txtSelectedDate.text =
+            "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일"
 
-        val test = ScheduleList("은지랑 놀기 ","2012년 12월 30일 10:30","2012년 12월 30일 11:30","메모메모")
-        ScheduleList.scheduleList.add(test)
+
+
+        //선택한 날짜의 schedulelist만 따로 담은 mutablelist
+        val oneDayMutable = mutableListOf<ScheduleList>()
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+
+
+        for (i in ScheduleList.MutablescheduleList) {
+            val start = formatter.parse(i.start)
+            val end = formatter.parse(i.end)
+
+            if (CalendarFragment.selctedDate.isInRange(CalendarDay(start), CalendarDay(end))) {
+                oneDayMutable.add(i)
+            }
+        }
+
+        for(i in oneDayMutable){
+        Log.e("onedayMutable",i.memo.toString())}
 
 
         //recyclerview 달기
-        val adapter = RecyclerViewAdapter(ScheduleList.scheduleList, LayoutInflater.from(get_context))
+        val adapter = RecyclerViewAdapter(oneDayMutable, LayoutInflater.from(get_context))
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
 

@@ -7,10 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.example.calendar.ColoredDate.AlldayDecorator
-import com.example.calendar.ColoredDate.SaturdayDecorator
-import com.example.calendar.ColoredDate.SundayDecorator
-import com.example.calendar.ColoredDate.TodayDecorator
 import android.content.pm.PackageManager
 
 import android.content.pm.PackageInfo
@@ -35,6 +31,9 @@ import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.calendar.BaseActivity.BaseActivity
+import com.example.calendar.ColoredDate.*
+import com.example.calendar.Dots.Dots
+import com.example.calendar.Dots.Dots.Companion.calendarDotsAll
 import com.example.calendar.Model.Calendar
 import com.example.calendar.Retrofit.RetrofitService.Companion.service
 import com.example.calendar.api.CalendarService
@@ -56,13 +55,14 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDate.now
 import java.util.*
 import kotlin.collections.HashMap
 
 
-class CalendarFragment : Fragment(){
+class CalendarFragment : Fragment() {
     private lateinit var binding: CalendarFragBinding
     private lateinit var get_context: Activity
 
@@ -71,6 +71,8 @@ class CalendarFragment : Fragment(){
         if (context is Activity) {
             get_context = context
         }
+        /**점찍기**/
+        Dots.getDate()
     }
 
     override fun onCreateView(
@@ -81,33 +83,25 @@ class CalendarFragment : Fragment(){
 
 //practice
 
-        GlobalScope.launch {
-            var input = HashMap<String, Any>()
-            input["dateStart"] = "2021-08-25 00:00:00"
-            input["dateEnd"] = "2021-08-26 00:10:00"
-            input["content"] = "study2"
-            service.putCalendar("2","111",input)
-
-
-//            val response = service.getCalendar("111")
-//            Log.e("sal yo zo", response.body().toString())
-//            var cal = response.body()!!
-//            for (i in cal.result){
-//                i.
-//            }
-
+        // GlobalScope.launch {
 //            var input = HashMap<String, Any>()
-//            input["dateStart"] = "2021-08-23 00:00:00"
-//            input["dateEnd"] = "2021-08-23 00:10:00"
-//            input["content"] = "study"
+//            input["dateStart"] = "2021-08-25 00:00:00"
+//            input["dateEnd"] = "2021-08-26 00:10:00"
+//            input["content"] = "study2"
+//            service.putCalendar("2","111",input)
+
+        //    Log.d("delete",""+service.deleteCalendar("3","111"))
+
+
 //
-//            service.postCalendar("1000", input)
-//            val response2 = service.getCalendar("1000")
-//            Log.e("sal yo zo", response2.body().toString())
-        }
+//            )
+        //     }
 //pracitce
         binding = CalendarFragBinding.inflate(inflater, container, false)
         val view = binding.root
+
+
+
 
 
         //캘린더뷰에 날짜별로 색상 다르게 하는 decorator달기
@@ -115,7 +109,8 @@ class CalendarFragment : Fragment(){
             SundayDecorator(),
             SaturdayDecorator(),
             TodayDecorator(get_context),
-            AlldayDecorator()
+            AlldayDecorator(),
+            EventDecorator(calendarDotsAll)
         )
 
 

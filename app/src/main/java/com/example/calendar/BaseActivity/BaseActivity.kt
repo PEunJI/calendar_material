@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -19,21 +20,27 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.FragmentResultOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.calendar.Adapter.RecyclerViewAdapter
+import com.example.calendar.Adapter.ScheduleList
+import com.example.calendar.AllSchedulesFragment
 import com.example.calendar.CalendarFragment
+import com.example.calendar.Dots.Dots
 import com.example.calendar.R
+import com.example.calendar.Retrofit.RetrofitService
 import com.example.calendar.ScheduleEnrollFragment
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.google.android.material.navigation.NavigationView
 import com.kakao.sdk.user.UserApiClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import kotlinx.coroutines.*
+import kotlinx.coroutines.NonCancellable.join
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.text.SimpleDateFormat
 import java.util.*
 
 class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -41,18 +48,23 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var binding: ActivityBaseBinding
 
 
+    @InternalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+//        /**점찍기**/
+//        Dots.getDate()
+
+
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //ViewModel 인스턴스 생성
 
 
         //초기 프래그먼트 캘린더프래그먼트로 지정
-        replaceFragment(calendarFragment, "calendar")
+        replaceFragment(CalendarFragment(), "calendar")
 
 
-        //툴바사
+        //툴바사용
         val profile_image = intent.getStringExtra("profile")
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -121,8 +133,8 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     e.printStackTrace();
                 }
             R.id.toolbar_schedules ->
-                Log.d("frag", "")
-
+                replaceFragment(AllSchedulesFragment.newInstance(), "alldays")
+               // Log.e("toolbar","toolbar")
             R.id.toolbar_plus ->
                 //plus 눌렀을 때 달력 프래그먼트면 오늘 날짜로 일정입력 bottomfragment 띄우
                 if (getFragment("calendar") is CalendarFragment) {
@@ -163,13 +175,11 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-
-
     //fragment 전환 함수
     fun replaceFragment(fragment: Fragment, tag: String) {
-         BaseActivity.fragmentManager = supportFragmentManager
-        val fragmentTransaction =  BaseActivity.fragmentManager!!.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, fragment, tag).addToBackStack(null).commit()
+        BaseActivity.fragmentManager = supportFragmentManager
+        val fragmentTransaction = BaseActivity.fragmentManager!!.beginTransaction()
+        fragmentTransaction.replace(R.id.frame, fragment, tag).addToBackStack(null).commit()
 
     }
 
@@ -179,14 +189,9 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return fragment
     }
 
-    override fun onBackPressed() {
-        if(supportFragmentManager.findFragmentById(R.id.frame) is CalendarFragment){
-            android.os.Process.killProcess(android.os.Process.myPid())
-        }
-    }
 
-    companion object{
-        var fragmentManager : FragmentManager? = null
+    companion object {
+        var fragmentManager: FragmentManager? = null
     }
 
 

@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.calendar.R
 
-class RecyclerViewAdapter(val itemList: ArrayList<ScheduleList>, val inflater: LayoutInflater) :
+class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater: LayoutInflater) :
 //상속받는 함수의 타입은 이너클래스에서 만든 viewholder을 넣어준다.
     RecyclerView.Adapter<RecyclerViewAdapter.ViewHodler>() {
 

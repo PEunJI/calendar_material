@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.BaseActivity.BaseActivity
+import com.example.calendar.Dots.Dots
 import com.example.calendar.R
 import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
@@ -22,7 +24,6 @@ class KakaoLogin : AppCompatActivity() {
         binding = ActivityKakaoLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         updateKakaoLoginUi()
-
 
         //해쉬키
         try {
@@ -78,6 +79,7 @@ class KakaoLogin : AppCompatActivity() {
             if (error != null) {
                 Log.e("kakaoLogin", "토큰 정보 보기 실패", error)
             } else if (tokenInfo != null) {
+                user_id = tokenInfo.id
                 Log.i(
                     "kakaoLogin", "토큰 정보 보기 성공" +
                             "\n회원번호: ${tokenInfo.id}" +
@@ -95,6 +97,7 @@ class KakaoLogin : AppCompatActivity() {
             //로그인이 되어 있을 때
             if (user != null) {
                 checkToken()
+
                 startMainActivity(user.kakaoAccount!!.profile!!.thumbnailImageUrl!!,user.kakaoAccount!!.profile!!.nickname!!)
             } else {
                 binding.btnKakaoLogin.visibility = View.VISIBLE
@@ -112,6 +115,12 @@ class KakaoLogin : AppCompatActivity() {
             this.putExtra("profile_nickname",nickname)
         }
         startActivity(intent)
+    }
+
+
+
+    companion object{
+        var user_id = 0L
     }
 }
 

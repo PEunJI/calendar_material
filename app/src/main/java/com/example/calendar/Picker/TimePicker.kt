@@ -54,7 +54,7 @@ class TimePicker(
             if (startHour_full > ("${mutableEndHour.value!![0]}${mutableEndHour.value!![1]}").toInt()) {
                 mutableLiveData.value =
                     "${mutableStartHour.value!![0]+1}시 ${mutableStartHour.value!![1]}분"
-                Toast.makeText(context, "종료시간은 시작시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }

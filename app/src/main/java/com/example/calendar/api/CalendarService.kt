@@ -14,13 +14,19 @@ interface CalendarService {
     @POST("calender")
     suspend fun postCalendar(
         @Header("Authorization") USER_ID: String,
-        @Body params : HashMap<String, Any>
+        @Body params : HashMap<String, String>
     )
 
     @PUT("calender/{id}")
     suspend fun putCalendar(
         @Path ("id") id:String,
         @Header("Authorization") USER_ID: String,
-        @Body params : HashMap<String, Any>
+        @Body params : HashMap<String, String>
+    )
+
+    @DELETE("calender/{id}")
+    suspend fun deleteCalendar(
+        @Path ("id") id:String,
+        @Header("Authorization") USER_ID: String,
     )
 }
