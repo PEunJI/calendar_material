@@ -122,22 +122,22 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
         val startdate_picker =
             DatePicker(
-                mutableLiveData = start_liveDate,
-                returnStartDay = returnStartDay,
-                context = get_context,
-                mYear = mYear,
-                mMonth = mMonth,
-                mDay = mDay,
-                mutableLiveData_end = end_liveDate
+               start_liveDate,
+                returnStartDay,
+                 get_context,
+                 mYear,
+                 mMonth,
+                 mDay,
+                 end_liveDate
             )
         val enddate_picker =
             DatePicker(
-                mutableLiveData = end_liveDate,
-                returnStartDay = returnEndDate,
-                context = get_context,
-                mYear = mYear,
-                mMonth = mMonth,
-                mDay = mDay
+                 end_liveDate,
+                returnEndDate,
+                get_context,
+                mYear,
+                 mMonth,
+                mDay
             )
         val starthour_picker =
             TimePicker(start_liveHour, get_context, returnStartDay, returnEndDate, returnStartHour)
@@ -225,6 +225,12 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
                         service.postCalendar("${KakaoLogin.user_id}", input)
                     }
+                    Log.e("postdata","${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                    )
+                    Log.e("postdata",  "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}")
+                    Log.e("postdata", binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
+                    )
+
                     dismiss()
                 }
             }
