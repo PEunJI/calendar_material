@@ -1,5 +1,7 @@
 package com.example.calendar.Adapter
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Dots.Dots
 import com.example.calendar.Retrofit.RetrofitService
 import com.example.calendar.kakaoLogin.KakaoLogin
@@ -17,9 +19,6 @@ class ScheduleList(
     var memo: String? = null,
     var id: Int? = null
 ) {
-
-
-
 
     companion object {
 

@@ -3,45 +3,47 @@ package com.example.calendar
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Picker.DatePicker
+import com.example.calendar.Picker.ReviseDatePicker
+import com.example.calendar.Picker.ReviseTimePicker
 import com.example.calendar.Picker.TimePicker
-import com.example.calendar.Retrofit.RetrofitService.Companion.service
+import com.example.calendar.Retrofit.RetrofitService
+import com.example.calendar.databinding.FragmentReviseEnrollBinding
 import com.example.calendar.databinding.FragmentScheduleEnrollBinding
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-
-class ScheduleEnrollFragment : BottomSheetDialogFragment() {
+class ReviseEnrollFragment : BottomSheetDialogFragment() {
 
     //현재 날짜
-    val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-
-    var mYear: Int = 0
-    var mMonth: Int = 0
-    var mDay: Int = 0
-    val mHour: Int = c.get(Calendar.HOUR_OF_DAY)
-    val mMinute: Int = c.get(Calendar.MINUTE)
+    var startY: Int = 0
+    var startM: Int = 0
+    var startD: Int = 0
+    var startH: Int = 0
+    var startm: Int = 0
+    var endY: Int = 0
+    var endM: Int = 0
+    var endD: Int = 0
+    var endH: Int = 0
+    var endm: Int = 0
+    var memo: String = ""
+    var title: String = ""
+    var id: Int? = null
 
     val start_liveDate = MutableLiveData<String>()
     val start_liveHour = MutableLiveData<String>()
@@ -49,17 +51,32 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
     val end_liveHour = MutableLiveData<String>()
 
     lateinit var get_context: Activity
-    lateinit var binding: FragmentScheduleEnrollBinding
+    lateinit var binding: FragmentReviseEnrollBinding
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Activity) {
             get_context = context as Activity
         }
 
-            mYear = arguments?.getString("year")!!.toInt()
-            mMonth = arguments?.getString("month")!!.toInt()
-            mDay = arguments?.getString("day")!!.toInt()
+        startY = arguments?.getString("startY")!!.toInt()
+        startM = arguments?.getString("startM")!!.toInt()
+        startD = arguments?.getString("startD")!!.toInt()
+        startH = arguments?.getString("startH")!!.toInt()
+        startm = arguments?.getString("startm")!!.toInt()
+        endY = arguments?.getString("endY")!!.toInt()
+        endM = arguments?.getString("endM")!!.toInt()
+        endD = arguments?.getString("endD")!!.toInt()
+        endH = arguments?.getString("endH")!!.toInt()
+        endm = arguments?.getString("endm")!!.toInt()
+        try {
+            memo = arguments?.getString("memo")!!.toString()
+        } catch (e: Exception) {
         }
+        title = arguments?.getString("title")!!.toString()
+        id = arguments?.getInt("id")
+
+
+    }
 
 
     //다이어로그 펼쳐진 상태로 보이게하기
@@ -85,22 +102,19 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_schedule_enroll, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.fragment_revise_enroll, container, false)
         binding.apply {
-            lifecycleOwner = this@ScheduleEnrollFragment
-            main = this@ScheduleEnrollFragment
+            lifecycleOwner = this@ReviseEnrollFragment
+            main = this@ReviseEnrollFragment
         }
 
-        //첫세팅 (누른날짜~누시간+1시간)
-
-
-            start_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
-            start_liveHour.value = "${mHour}시 ${mMinute}분"
-            end_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
-            end_liveHour.value = "${mHour + 1}시 ${mMinute}분"
-            Log.d("dateTest2", "${mMonth}월")
-
-
+        //첫세팅
+        start_liveDate.value = "${startY}년 ${startM}월 ${startD}일 "
+        start_liveHour.value = "${startH}시 ${startm}분"
+        end_liveDate.value = "${endY}년 ${endM}월 ${endD}일 "
+        end_liveHour.value = "${endH}시 ${endm}분"
+        binding.txtMemo.setText(StringBuffer(memo))
+        binding.txtTitle.setText(StringBuffer(title))
 
         //cancle button
         binding.btnCancle.setOnClickListener {
@@ -114,66 +128,75 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         var returnStartHour = MutableLiveData<Array<Long>>()
         var returnEndHour = MutableLiveData<Array<Long>>()
 
-            returnStartDay.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
-            returnEndDate.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
-            returnStartHour.value = arrayOf(mHour.toLong(), mMinute.toLong())
-            returnEndHour.value = arrayOf(mHour.toLong() + 1, mMinute.toLong())
+        returnStartDay.value = arrayOf(startY.toLong(), startM.toLong(), startD.toLong())
+        returnEndDate.value = arrayOf(endY.toLong(), endM.toLong(), endD.toLong())
+        returnStartHour.value = arrayOf(startH.toLong(), startm.toLong())
+        returnEndHour.value = arrayOf(endH.toLong() + 1, endm.toLong())
 
 
+        //시작 날짜 피커
         val startdate_picker =
-            DatePicker(
+            ReviseDatePicker(
                 mutableLiveData = start_liveDate,
                 returnStartDay = returnStartDay,
                 context = get_context,
-                mYear = mYear,
-                mMonth = mMonth,
-                mDay = mDay,
+                mYear = startY,
+                mMonth = startM,
+                mDay = startD,
                 mutableLiveData_end = end_liveDate
             )
+        //종료날짜피커
         val enddate_picker =
-            DatePicker(
+            ReviseDatePicker(
                 mutableLiveData = end_liveDate,
                 returnStartDay = returnEndDate,
                 context = get_context,
-                mYear = mYear,
-                mMonth = mMonth,
-                mDay = mDay
+                mYear = endY,
+                mMonth = endM,
+                mDay = endD
             )
+        //시작 시간 피커
         val starthour_picker =
-            TimePicker(start_liveHour, get_context, returnStartDay, returnEndDate, returnStartHour)
+            ReviseTimePicker(
+                mutableLiveData = start_liveHour,
+                context = get_context,
+                mutableStartDate = returnStartDay,
+                mutableEndDate = returnEndDate,
+                mutableStartHour = returnStartHour
+            )
 
         //시작 날짜 눌렀을 때 datepicker띄우기
         binding.startDatePicker.setOnClickListener {
-                startdate_picker.datePickerDialog.show()
+            startdate_picker.datePickerDialog.show()
 
         }
 
         //시작 시간 눌렀을 때 timepicker띄우기
         binding.startTimePicker.setOnClickListener {
-                starthour_picker.timePickerDialog.apply {
-                    this.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-                }.show()
+            starthour_picker.timePickerDialog.apply {
+                this.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+            }.show()
 
         }
 
         //종료 날짜 눌렀을 때 datepicker띄우기
         binding.endDatePicker.setOnClickListener {
-                //종료 날짜는 시작날짜 이후로만 선택되게
-                //날짜 String->dateFormat->TimeMillis()
-                var date =
-                    "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-                Log.d("dateLog", "" + returnStartDay.value!![2])
-                val dateFormat = simpleDateFormat.parse(date)
+            //종료 날짜는 시작날짜 이후로만 선택되게
+            //날짜 String->dateFormat->TimeMillis()
+            var date =
+                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            Log.d("dateLog", "" + returnStartDay.value!![2])
+            val dateFormat = simpleDateFormat.parse(date)
 
-                enddate_picker.datePickerDialog.apply {
-                    datePicker.minDate = (dateFormat.time)
-                }.show()
-                Log.d("dateTest", date)
+            enddate_picker.datePickerDialog.apply {
+                datePicker.minDate = (dateFormat.time)
+            }.show()
+            Log.d("dateTest", date)
 
         }
 
-        val endhour_picker = TimePicker(
+        val endhour_picker = ReviseTimePicker(
             end_liveHour,
             get_context,
             returnStartDay,
@@ -185,7 +208,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         //종료 시간은 시작 시간 이후로만 선택되게 하고 싶지만 커스텀해야하는 것 같다. 구찮다. 그냥 토스트를 띄우고 스타트타임+1시간으로 고정시키자
         binding.endTimePicker.setOnClickListener {
 
-                endhour_picker.timePickerDialog_end.show()
+            endhour_picker.timePickerDialog_end.show()
 
         }
 
@@ -223,7 +246,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
                         input["content"] =
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                        service.postCalendar("${KakaoLogin.user_id}", input)
+                        RetrofitService.service.putCalendar("$id","${KakaoLogin.user_id}", input)
                     }
                     dismiss()
                 }
@@ -233,4 +256,3 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
     }
 
 }
-

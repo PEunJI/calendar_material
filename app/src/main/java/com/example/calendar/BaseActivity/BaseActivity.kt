@@ -61,7 +61,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         //초기 프래그먼트 캘린더프래그먼트로 지정
-        replaceFragment(CalendarFragment(), "calendar")
+        replaceFragment(calendarFragment, "calendar")
 
 
         //툴바사용

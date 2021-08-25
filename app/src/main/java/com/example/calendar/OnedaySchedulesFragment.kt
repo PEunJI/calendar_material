@@ -95,5 +95,4 @@ class OnedaySchedulesFragment : Fragment() {
             return OnedaySchedulesFragment()
         }
     }
-   val fragManagerAdapter = parentFragmentManager
 }

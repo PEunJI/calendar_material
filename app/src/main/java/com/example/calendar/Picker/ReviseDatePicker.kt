@@ -5,9 +5,9 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 
-class DatePicker(
-    mutableLiveData: MutableLiveData<String>,
-    var returnStartDay: MutableLiveData<Array<Long>>,
+class ReviseDatePicker (
+    mutableLiveData: MutableLiveData<String>, //글자
+    var returnStartDay: MutableLiveData<Array<Long>>, //리턴
     context: Context,
     mYear: Int,
     mMonth: Int,

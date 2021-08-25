@@ -9,13 +9,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.calendar.*
 import com.example.calendar.BaseActivity.BaseActivity
-import com.example.calendar.CalendarFragment
-import com.example.calendar.OnedaySchedulesFragment
-import com.example.calendar.R
-import com.example.calendar.ScheduleEnrollFragment
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.Exception
+import java.util.*
 
 class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater: LayoutInflater) :
 //상속받는 함수의 타입은 이너클래스에서 만든 viewholder을 넣어준다.
@@ -58,39 +57,42 @@ class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater:
         holder.end.setText(itemList.get(position).end)
         holder.memo.setText(itemList.get(position).memo)
 
-        //수정
+        val endfull = itemList.get(position).end
+        val dateHourSplit_e = endfull!!.split(" ")
+        val datefull_e = dateHourSplit_e[0]
+        val hourfull_e = dateHourSplit_e[1]
+        val datesplit_e = datefull_e.split("-")
+        val hoursplit_e = hourfull_e.split(":")
+        val endY = datesplit_e[0]
+        val endM = datesplit_e[1]
+        val endD = datesplit_e[2]
+        val endH = hoursplit_e[0]
+        val endm = hoursplit_e[1]
+
+        val startfull = itemList.get(position).start
+        val dateHourSplit = startfull!!.split(" ")
+        val datefull = dateHourSplit[0]
+        val hourfull = dateHourSplit[1]
+        val datesplit = datefull.split("-")
+        val hoursplit = hourfull.split(":")
+        val startY = datesplit[0]
+        val startM = datesplit[1]
+        val startD = datesplit[2]
+        val startH = hoursplit[0]
+        val startm = hoursplit[1]
+
         holder.revise.setOnClickListener {
-            val bottomSheet = ScheduleEnrollFragment()
+            val bottomSheet = ReviseEnrollFragment()
             bottomSheet.apply {
                 arguments = Bundle().apply {
-                    val startfull = itemList[position].start
-                    val endfull = itemList[position].end
-
-                    val dateHourSplit = startfull!!.split(" ")
-                    val datefull = dateHourSplit[0]
-                    val hourfull = dateHourSplit[1]
-                    val datesplit = datefull.split("-")
-                    val hoursplit = hourfull.split(":")
-                    val startY = datesplit[0]
-                    val startM = datesplit[1]
-                    val startD = datesplit[2]
-                    val startH = hoursplit[0]
-                    val startm = hoursplit[1]
-
-                    val dateHourSplit_e = endfull!!.split(" ")
-                    val datefull_e = dateHourSplit_e[0]
-                    val hourfull_e = dateHourSplit_e[1]
-                    val datesplit_e = datefull_e.split("-")
-                    val hoursplit_e = hourfull_e.split(":")
-                    val endY = datesplit_e[0]
-                    val endM = datesplit_e[1]
-                    val endD = datesplit_e[2]
-                    val endH = hoursplit_e[0]
-                    val endm = hoursplit_e[1]
-
+                    try {
+                        putString("memo", itemList[position].memo)
+                    } catch (e: Exception) {
+                    }
+                    putString("title", itemList[position].title)
                     putString("startY", startY)
                     putString("startM", startM)
-                    putString("startM", startD)
+                    putString("startD", startD)
                     putString("startH", startH)
                     putString("startm", startm)
                     putString("endY", endY)
@@ -98,17 +100,10 @@ class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater:
                     putString("endD", endD)
                     putString("endH", endH)
                     putString("endm", endm)
+                    putInt("id", itemList[position].id!!)
 
                 }
-            }.show(BaseActivity.fragmentManager!!,bottomSheet.tag)
-
-            itemList.get(position).id
-//            GlobalScope.launch {
-//                var input = HashMap<String, Any>()
-//                input["dateStart"] = "2021-08-25 00:00:00"
-//                input["dateEnd"] = "2021-08-26 00:10:00"
-//                input["content"] = "study2"
-//            }
+            }.show(BaseActivity.fragmentManager!!, bottomSheet.tag)
         }
 
     }
