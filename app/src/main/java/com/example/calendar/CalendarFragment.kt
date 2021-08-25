@@ -71,8 +71,7 @@ class CalendarFragment : Fragment() {
         if (context is Activity) {
             get_context = context
         }
-        /**점찍기**/
-        Dots.getDate()
+
     }
 
     override fun onCreateView(
@@ -80,14 +79,12 @@ class CalendarFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        /**점찍기**/
+        Dots.getDate()
 //practice
 
         // GlobalScope.launch {
-//            var input = HashMap<String, Any>()
-//            input["dateStart"] = "2021-08-25 00:00:00"
-//            input["dateEnd"] = "2021-08-26 00:10:00"
-//            input["content"] = "study2"
+
 //            service.putCalendar("2","111",input)
 
         //    Log.d("delete",""+service.deleteCalendar("3","111"))

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,12 +39,17 @@ class AllSchedulesFragment : Fragment() {
             RecyclerViewAdapter(ScheduleList.MutablescheduleList, LayoutInflater.from(get_context))
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
+
+        for(i in ScheduleList.MutablescheduleList){
+        Log.e("adpaterlist",i.memo.toString())}
+
         return view
+
     }
     companion object {
         fun newInstance(): Fragment {
 
-            return CalendarFragment()
+            return AllSchedulesFragment()
         }
     }
 }

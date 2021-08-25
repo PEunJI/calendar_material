@@ -52,9 +52,9 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        /**점찍기**/
-//        Dots.getDate()
 
+        /**스케줄 가져오기**/
+        ScheduleList.getScheules()
 
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -149,7 +149,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 //onedayshcedulefragment면, 그날 날짜로 bottomfragment 띄우
                 else {
-                    val bottomSheet = ScheduleEnrollFragment()
+                     val bottomSheet = ScheduleEnrollFragment()
                     bottomSheet.apply {
                         arguments = Bundle().apply {
                             putString("year", CalendarFragment.selctedDate.year.toString())

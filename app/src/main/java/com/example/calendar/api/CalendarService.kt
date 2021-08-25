@@ -6,25 +6,25 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface CalendarService {
-    @GET("calender")
+    @GET("calendar")
     suspend fun getCalendar(
         @Header("Authorization") USER_ID: String
     ): Response<Calendar>
 
-    @POST("calender")
+    @POST("calendar")
     suspend fun postCalendar(
         @Header("Authorization") USER_ID: String,
         @Body params : HashMap<String, String>
     )
 
-    @PUT("calender/{id}")
+    @PUT("calendar/{id}")
     suspend fun putCalendar(
         @Path ("id") id:String,
         @Header("Authorization") USER_ID: String,
         @Body params : HashMap<String, String>
     )
 
-    @DELETE("calender/{id}")
+    @DELETE("calendar/{id}")
     suspend fun deleteCalendar(
         @Path ("id") id:String,
         @Header("Authorization") USER_ID: String,

@@ -42,6 +42,17 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
     val mHour: Int = c.get(Calendar.HOUR_OF_DAY)
     val mMinute: Int = c.get(Calendar.MINUTE)
 
+    var startY: Int = 0
+    var startM: Int = 0
+    var startD: Int = 0
+    var startH: Int = 0
+    var startm: Int = 0
+    var endY: Int = 0
+    var endM: Int = 0
+    var endD: Int = 0
+    var endH: Int = 0
+    var endm: Int = 0
+
     val start_liveDate = MutableLiveData<String>()
     val start_liveHour = MutableLiveData<String>()
     val end_liveDate = MutableLiveData<String>()
@@ -58,9 +69,21 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         mMonth = arguments?.getString("month")!!.toInt()
         mDay = arguments?.getString("day")!!.toInt()
 
+        //수정 날짜시간 받아오기
+        startY = arguments?.getString("startY")!!.toInt()
+        startM = arguments?.getString("startM")!!.toInt()
+        startD = arguments?.getString("startD")!!.toInt()
+        startH = arguments?.getString("startH")!!.toInt()
+        startm = arguments?.getString("startm")!!.toInt()
+        endY = arguments?.getString("endY")!!.toInt()
+        endM = arguments?.getString("endM")!!.toInt()
+        endD = arguments?.getString("endD")!!.toInt()
+        endH = arguments?.getString("endH")!!.toInt()
+        endm = arguments?.getString("endm")!!.toInt()
+
     }
 
-
+    //다이어로그 펼쳐진 상태로 보이게하기
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val bottomSheetDialog = BottomSheetDialog(
             requireContext(),
@@ -91,14 +114,21 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
         //첫세팅 (누른날짜~누시간+1시간)
 
+
+        if(mYear==0){
+
         start_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
         start_liveHour.value = "${mHour}시 ${mMinute}분"
         end_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
         end_liveHour.value = "${mHour + 1}시 ${mMinute}분"
-        Log.d("dateTest2", "${mMonth}월")
+        Log.d("dateTest2", "${mMonth}월")}
+
+        //cancle button
         binding.btnCancle.setOnClickListener {
             dismiss()
         }
+
+
         val returnStartDay = MutableLiveData<Array<Long>>()
         returnStartDay.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
 

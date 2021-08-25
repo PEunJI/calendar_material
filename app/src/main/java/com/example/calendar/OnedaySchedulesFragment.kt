@@ -34,8 +34,7 @@ class OnedaySchedulesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /**스케줄 가져오기**/
-        ScheduleList.getScheules()
+
     }
 
 
@@ -48,6 +47,7 @@ class OnedaySchedulesFragment : Fragment() {
         val view = binding.root
         binding.txtSelectedDate.text =
             "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일"
+
 
 
 
@@ -74,6 +74,7 @@ class OnedaySchedulesFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
 
+
         return view
 
     }
@@ -94,4 +95,5 @@ class OnedaySchedulesFragment : Fragment() {
             return OnedaySchedulesFragment()
         }
     }
+   val fragManagerAdapter = parentFragmentManager
 }
