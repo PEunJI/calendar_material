@@ -1,5 +1,6 @@
 package com.example.calendar.Adapter
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.example.calendar.*
 import com.example.calendar.BaseActivity.BaseActivity
@@ -15,6 +17,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.*
+import android.widget.Toast
+
+import android.content.DialogInterface
+import com.example.calendar.Retrofit.RetrofitService
+import com.example.calendar.kakaoLogin.KakaoLogin
+
 
 class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater: LayoutInflater) :
 //상속받는 함수의 타입은 이너클래스에서 만든 viewholder을 넣어준다.
@@ -105,7 +113,26 @@ class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater:
                 }
             }.show(BaseActivity.fragmentManager!!, bottomSheet.tag)
         }
-
+        //삭제 버튼
+        holder.delete.setOnClickListener {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(holder.delete.context)
+            val ad = builder.create()
+            ad.show()
+            builder.setTitle("삭제")
+            builder.setMessage("삭제하시겠습니까?")
+            builder.setPositiveButton("예") { dialog, id ->
+            //삭제
+                val scheduleId = itemList[position].id
+                GlobalScope.launch {
+                    RetrofitService.service.deleteCalendar("$scheduleId","${KakaoLogin.user_id}")
+                }
+                ad.dismiss()
+            }
+            builder.setNegativeButton("아니오") { dialog, id ->
+                    ad.dismiss()
+            }
+            builder.create().show()
+        }
     }
 
     override fun getItemCount(): Int {
