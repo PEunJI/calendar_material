@@ -1,5 +1,6 @@
 package com.example.calendar.Adapter
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Dots.Dots
@@ -12,7 +13,7 @@ import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ScheduleList(
+data class ScheduleList(
     var title: String? = null,
     var start: String? = null,
     var end: String? = null,

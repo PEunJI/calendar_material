@@ -8,17 +8,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.*
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.calendar.Adapter.OnedayDiffUtil
 import com.example.calendar.Adapter.RecyclerViewAdapter
 import com.example.calendar.Adapter.ScheduleList
+import com.example.calendar.Adapter.ScheduleList.Companion.MutablescheduleList
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -34,11 +32,12 @@ class OnedaySchedulesFragment : Fragment() {
         if (context is Activity) {
             get_context = context
         }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.e("fragcheck","oncreate")
     }
 
 
@@ -53,20 +52,16 @@ class OnedaySchedulesFragment : Fragment() {
             "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일"
 
 
-
-
-
 //        for(i in oneDayMutable){
 //        Log.e("onedayMutable",i.memo.toString())}
 
         oneDayMutableList()
 
 
+        //recyclerview 달기
 
-            //recyclerview 달기
-            adapter = RecyclerViewAdapter(oneDayMutable, LayoutInflater.from(get_context))
-            binding.recyclerView.adapter = adapter
-            binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
+        binding.recyclerView.adapter = recyclerAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
 
 
 
@@ -80,14 +75,38 @@ class OnedaySchedulesFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+
     }
 
     override fun onResume() {
         super.onResume()
+        Log.e("datacheck","before"+oneDayMutable[0].memo.toString())
+        MutablescheduleList.clear()
+        oneDayMutable.clear()
+        ScheduleList.getScheules()
+        oneDayMutableList()
+        recyclerAdapter.submitList(oneDayMutable)
+        Log.e("datacheck","after"+oneDayMutable[0].memo.toString())
+        Log.e("fragcheck","resume")
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.e("fragcheck","onPause")
 
+    }
 
+    override fun onStop() {
+        super.onStop()
+        Log.e("fragcheck","onStop")
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e("fragcheck","onDestroyView")
+
+    }
 
 
     companion object {
@@ -96,9 +115,8 @@ class OnedaySchedulesFragment : Fragment() {
             return OnedaySchedulesFragment()
         }
 
-       val oneDayMutable = mutableListOf<ScheduleList>()
-        var adapter: RecyclerViewAdapter? = null
-
+        val oneDayMutable = mutableListOf<ScheduleList>()
+        val recyclerAdapter = RecyclerViewAdapter()
 
         fun oneDayMutableList() {
             //선택한 날짜의 schedulelist만 따로 담은 mutablelist
@@ -119,7 +137,6 @@ class OnedaySchedulesFragment : Fragment() {
         }
 
     }
-
 
 
 }

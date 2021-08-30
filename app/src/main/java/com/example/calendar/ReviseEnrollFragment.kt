@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
+import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.ReviseDatePicker
 import com.example.calendar.Picker.ReviseTimePicker
@@ -254,8 +255,14 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+
         return binding.root
+
+
+
     }
+
+
 
     companion object{
         var returnEndHour = MutableLiveData<Array<Long>>()

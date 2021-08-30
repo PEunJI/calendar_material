@@ -27,9 +27,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.ColoredDate.*
 import com.example.calendar.Dots.Dots
@@ -130,8 +132,25 @@ class CalendarFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        Log.e("fraggggcheck","onResume")
+
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.e("fraggggcheck","onPause")
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("fraggggcheck","onDestroy")
+
+    }
 
     companion object {
         fun newInstance(): Fragment {

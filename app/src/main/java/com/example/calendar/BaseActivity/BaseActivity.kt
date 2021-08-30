@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -16,8 +17,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
 import com.example.calendar.*
-import com.example.calendar.Adapter.OnedayDiffUtil
 import com.example.calendar.Adapter.ScheduleList
+import com.example.calendar.Adapter.ScheduleList.Companion.MutablescheduleList
+import com.example.calendar.OnedaySchedulesFragment.Companion.oneDayMutable
+import com.example.calendar.OnedaySchedulesFragment.Companion.oneDayMutableList
+import com.example.calendar.OnedaySchedulesFragment.Companion.recyclerAdapter
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
@@ -92,6 +96,31 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onRestart() {
         super.onRestart()
 
+        Log.e("activitycheck","onrestart")
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("activitycheck","onResume")
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("activitycheck","onPause")
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.e("activitycheck","onStop")
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("activitycheck","onDestory")
 
     }
 
