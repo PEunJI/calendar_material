@@ -3,8 +3,10 @@ package com.example.calendar.Picker
 import android.R
 import android.app.TimePickerDialog
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.example.calendar.ReviseEnrollFragment.Companion.returnEndHour
 
 class ReviseTimePicker (
     var mutableLiveData: MutableLiveData<String>,
@@ -59,14 +61,16 @@ class ReviseTimePicker (
         mutableLiveData.value = "${hourOfDay}시 ${minute}분"
         mutableEndHour.value = arrayOf(hourOfDay.toLong(), minute.toLong())
         selectOnlyAfterStartTime()
+        returnEndHour.value=arrayOf(hourOfDay.toLong(), minute.toLong())
+        Log.e("timecheck",hourOfDay.toString()+minute.toString())
     }
 
     val timePickerDialog_end = TimePickerDialog(
         context,
         R.style.Theme_Holo_Light_Dialog_NoActionBar,
         timeSetListener_end,
-        mutableStartHour.value!![0].toInt() + 1,
-        mutableStartHour.value!![1].toInt(),
+        returnEndHour.value!![0].toInt(),
+        returnEndHour.value!![1].toInt(),
         true
     )
 }

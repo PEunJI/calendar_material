@@ -126,12 +126,11 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
         var returnStartDay = MutableLiveData<Array<Long>>()
         var returnEndDate = MutableLiveData<Array<Long>>()
         var returnStartHour = MutableLiveData<Array<Long>>()
-        var returnEndHour = MutableLiveData<Array<Long>>()
 
         returnStartDay.value = arrayOf(startY.toLong(), startM.toLong(), startD.toLong())
         returnEndDate.value = arrayOf(endY.toLong(), endM.toLong(), endD.toLong())
         returnStartHour.value = arrayOf(startH.toLong(), startm.toLong())
-        returnEndHour.value = arrayOf(endH.toLong() + 1, endm.toLong())
+        returnEndHour.value = arrayOf(endH.toLong(), endm.toLong())
 
 
         //시작 날짜 피커
@@ -242,10 +241,13 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
                     GlobalScope.launch {
                         input["dateStart"] =
                             "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                       Log.e("putcalendar",input["dateStart"].toString())
                         input["dateEnd"] =
                             "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+                        Log.e("putcalendar",input["dateEnd"].toString())
                         input["content"] =
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
+                        Log.e("putcalendar",input["content"].toString())
                         RetrofitService.service.putCalendar("$id","${KakaoLogin.user_id}", input)
                     }
                     dismiss()
@@ -253,6 +255,11 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
             }
         }
         return binding.root
+    }
+
+    companion object{
+        var returnEndHour = MutableLiveData<Array<Long>>()
+
     }
 
 }
