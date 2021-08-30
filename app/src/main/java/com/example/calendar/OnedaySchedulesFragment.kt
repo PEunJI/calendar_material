@@ -12,8 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.calendar.Adapter.OnedayDiffUtil
 import com.example.calendar.Adapter.RecyclerViewAdapter
 import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.BaseActivity.BaseActivity
@@ -25,6 +28,7 @@ class OnedaySchedulesFragment : Fragment() {
     private lateinit var binding: ActivityOnedaySchedulesBinding
     private lateinit var get_context: Activity
     private lateinit var selectedDate: String
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Activity) {
@@ -51,28 +55,22 @@ class OnedaySchedulesFragment : Fragment() {
 
 
 
-        //선택한 날짜의 schedulelist만 따로 담은 mutablelist
-        val oneDayMutable = mutableListOf<ScheduleList>()
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+
+//        for(i in oneDayMutable){
+//        Log.e("onedayMutable",i.memo.toString())}
+
+        oneDayMutableList()
 
 
-        for (i in ScheduleList.MutablescheduleList) {
-            val start = formatter.parse(i.start)
-            val end = formatter.parse(i.end)
 
-            if (CalendarFragment.selctedDate.isInRange(CalendarDay(start), CalendarDay(end))) {
-                oneDayMutable.add(i)
-            }
-        }
-
-        for(i in oneDayMutable){
-        Log.e("onedayMutable",i.memo.toString())}
+            //recyclerview 달기
+            adapter = RecyclerViewAdapter(oneDayMutable, LayoutInflater.from(get_context))
+            binding.recyclerView.adapter = adapter
+            binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
 
 
-        //recyclerview 달기
-        val adapter = RecyclerViewAdapter(oneDayMutable, LayoutInflater.from(get_context))
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
+
+
 
 
         return view
@@ -89,10 +87,41 @@ class OnedaySchedulesFragment : Fragment() {
     }
 
 
+
+
+
     companion object {
         fun newInstance(): Fragment {
 
             return OnedaySchedulesFragment()
         }
+
+       val oneDayMutable = mutableListOf<ScheduleList>()
+        var adapter: RecyclerViewAdapter? = null
+
+
+        fun oneDayMutableList() {
+            //선택한 날짜의 schedulelist만 따로 담은 mutablelist
+//        val oneDayMutable = mutableListOf<ScheduleList>()
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+
+
+
+
+            for (i in ScheduleList.MutablescheduleList) {
+                val start = formatter.parse(i.start)
+                val end = formatter.parse(i.end)
+
+                if (CalendarFragment.selctedDate.isInRange(CalendarDay(start), CalendarDay(end))) {
+                    oneDayMutable.add(i)
+                }
+            }
+        }
+
     }
+
+
+
 }
+
+

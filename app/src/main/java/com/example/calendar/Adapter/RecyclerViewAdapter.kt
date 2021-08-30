@@ -20,6 +20,8 @@ import java.util.*
 import android.widget.Toast
 
 import android.content.DialogInterface
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import com.example.calendar.Retrofit.RetrofitService
 import com.example.calendar.kakaoLogin.KakaoLogin
 
@@ -60,6 +62,9 @@ class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater:
 
     //3. list[position]의 내용물을 저장된 textview(holder.view)에 넣어준다.
     override fun onBindViewHolder(holder: ViewHodler, position: Int) {
+
+        updateAdapter()
+
         holder.title.setText(itemList.get(position).title)
         holder.start.setText(itemList.get(position).start)
         holder.end.setText(itemList.get(position).end)
@@ -138,4 +143,31 @@ class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater:
     override fun getItemCount(): Int {
         return itemList.size
     }
+
+    fun updateAdapter(){
+
+        var oldList = OnedaySchedulesFragment.oneDayMutable
+
+        ScheduleList.MutablescheduleList.clear()
+        OnedaySchedulesFragment.oneDayMutable.clear()
+        /**스케줄 다시 가져오기**/
+        ScheduleList.getScheules()
+        OnedaySchedulesFragment.oneDayMutableList()
+        val newList = OnedaySchedulesFragment.oneDayMutable
+
+        for(i in 0 until oldList.size ){
+        Log.d("updateAdapter",oldList[i].memo.toString())}
+        for(i in 0 until newList.size ){
+            Log.d("updateAdapter",newList[i].memo.toString())}
+        val oneDiffUtilCallback = OnedayDiffUtil(oldList, newList)
+        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(oneDiffUtilCallback)
+       this.run{
+        diffResult.dispatchUpdatesTo(this)}
+    }
+
+
 }
+
+
+
+

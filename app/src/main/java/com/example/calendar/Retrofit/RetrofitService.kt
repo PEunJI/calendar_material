@@ -9,7 +9,7 @@ class RetrofitService {
 
     companion object{
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://kumas.dev:8001/")
+            .baseUrl("http://api.kumas.dev/")
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()

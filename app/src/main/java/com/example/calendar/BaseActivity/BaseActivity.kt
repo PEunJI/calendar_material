@@ -1,15 +1,10 @@
 package com.example.calendar.BaseActivity
 
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -18,30 +13,17 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentResultListener
-import androidx.fragment.app.FragmentResultOwner
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
-import com.example.calendar.Adapter.RecyclerViewAdapter
+import com.example.calendar.*
+import com.example.calendar.Adapter.OnedayDiffUtil
 import com.example.calendar.Adapter.ScheduleList
-import com.example.calendar.AllSchedulesFragment
-import com.example.calendar.CalendarFragment
-import com.example.calendar.Dots.Dots
-import com.example.calendar.R
-import com.example.calendar.Retrofit.RetrofitService
-import com.example.calendar.ScheduleEnrollFragment
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.google.android.material.navigation.NavigationView
 import com.kakao.sdk.user.UserApiClient
-import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
-import kotlinx.coroutines.NonCancellable.join
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import java.text.SimpleDateFormat
 import java.util.*
 
 class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -104,6 +86,13 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         binding.navigationView.setNavigationItemSelectedListener(this)
+    }
+
+    //스케줄 다시 가져오기
+    override fun onRestart() {
+        super.onRestart()
+
+
     }
 
     //커스텀 툴바 적용
