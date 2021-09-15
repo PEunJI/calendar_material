@@ -21,6 +21,7 @@ import com.example.calendar.Retrofit.RetrofitService
 import com.example.calendar.databinding.FragmentReviseEnrollBinding
 import com.example.calendar.databinding.FragmentScheduleEnrollBinding
 import com.example.calendar.kakaoLogin.KakaoLogin
+import com.example.calendar.kakaoLogin.KakaoSDKInit
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -249,7 +250,7 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
                         input["content"] =
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
                         Log.e("putcalendar",input["content"].toString())
-                        RetrofitService.service.putCalendar("$id","${KakaoLogin.user_id}", input)
+                        (requireActivity().application as KakaoSDKInit).service.putCalendar("$id","${KakaoLogin.user_id}", input)
                     }
                     dismiss()
                 }

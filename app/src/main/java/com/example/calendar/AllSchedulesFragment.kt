@@ -36,7 +36,7 @@ class AllSchedulesFragment : Fragment() {
         val view = binding.root
 
         val adapter =
-            RecyclerViewAdapter()
+            RecyclerViewAdapter(requireActivity().application)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
 

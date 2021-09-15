@@ -9,5 +9,6 @@ data class Calendar(
     @SerializedName("message")
     val message: String,
     @SerializedName("result")
-    val result: List<Result>
+    val result: ArrayList<Result>
+
 )

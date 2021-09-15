@@ -2,78 +2,51 @@ package com.example.calendar
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import android.content.pm.PackageManager
-
-import android.content.pm.PackageInfo
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.util.Base64
-import android.view.*
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.widget.Toolbar
-import androidx.core.os.bundleOf
-import androidx.core.view.GravityCompat
-import androidx.databinding.DataBindingUtil
-import androidx.drawerlayout.widget.DrawerLayout
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.setFragmentResult
-import androidx.lifecycle.ViewModelProvider
-import com.bumptech.glide.Glide
-import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.ColoredDate.*
-import com.example.calendar.Dots.Dots
-import com.example.calendar.Dots.Dots.Companion.calendarDotsAll
 import com.example.calendar.Model.Calendar
-import com.example.calendar.Retrofit.RetrofitService.Companion.service
-import com.example.calendar.api.CalendarService
 import com.example.calendar.databinding.CalendarFragBinding
-import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
-import com.google.android.material.navigation.NavigationView
-import com.kakao.sdk.user.UserApiClient
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import kotlinx.coroutines.*
-import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.awaitResponse
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Url
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import retrofit2.Response
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDate.now
-import java.util.*
-import kotlin.collections.HashMap
 
 
 class CalendarFragment : Fragment() {
     private lateinit var binding: CalendarFragBinding
     private lateinit var get_context: Activity
+    var response: Response<Calendar>? = null
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Activity) {
             get_context = context
-        }
 
+        }
+//        /**점찍기**/
+//
+//        //응답받아서 날짜만 MutableList에 넣고, decorator에서 그 날짜에 dots를 찍어준다.
+//        runBlocking {
+//            response =
+//                (requireActivity().application as KakaoSDKInit).service.getCalendar("${KakaoLogin.user_id}")
+//
+//            Log.e("job.join", response.toString())
+//
+//
+//                var responses = response!!.body()!!
+//                for (i in responses.result) {
+//                    rangeDate(formatter.parse(i.dateStart), formatter.parse(i.dateEnd))
+//                }
+//
+//
+//        }
     }
 
     override fun onCreateView(
@@ -81,26 +54,10 @@ class CalendarFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        /**점찍기**/
-        Dots.getDate()
-//practice
-
-        // GlobalScope.launch {
-
-//            service.putCalendar("2","111",input)
-
-        //    Log.d("delete",""+service.deleteCalendar("3","111"))
 
 
-//
-//            )
-        //     }
-//pracitce
         binding = CalendarFragBinding.inflate(inflater, container, false)
         val view = binding.root
-
-
-
 
 
         //캘린더뷰에 날짜별로 색상 다르게 하는 decorator달기
@@ -109,9 +66,8 @@ class CalendarFragment : Fragment() {
             SaturdayDecorator(),
             TodayDecorator(get_context),
             AlldayDecorator(),
-            EventDecorator(calendarDotsAll)
+            EventDecorator(KakaoLogin.calendarDotsAll)
         )
-
 
 
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -132,13 +88,13 @@ class CalendarFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.e("fraggggcheck","onResume")
+        Log.e("fraggggcheck", "onResume")
 
     }
 
     override fun onPause() {
         super.onPause()
-        Log.e("fraggggcheck","onPause")
+        Log.e("fraggggcheck", "onPause")
 
     }
 
@@ -148,7 +104,7 @@ class CalendarFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("fraggggcheck","onDestroy")
+        Log.e("fraggggcheck", "onDestroy")
 
     }
 
@@ -162,6 +118,28 @@ class CalendarFragment : Fragment() {
 
     }
 
+    //캘린더에 점찍기 위해서 스케줄 있는 날짜만 받아움
+    // val calendarDots: MutableList<CalendarDay> = mutableListOf<CalendarDay>() //처음 끝 날짜만
+    //  val calendarDotsAll: HashSet<CalendarDay> = HashSet<CalendarDay>() //처음~끝 날짜 모두
+
+
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+
+
+//    fun rangeDate(startDate: Date, endDate: Date) {
+//        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+//        val c = java.util.Calendar.getInstance()
+//        var currentDay = startDate
+//        while (currentDay <= endDate) {
+//            calendarDotsAll.add(CalendarDay(currentDay))
+//            c.time = currentDay
+//            c.add(java.util.Calendar.DAY_OF_MONTH, 1)
+//            currentDay = c.time
+//        }
+//        for (date in calendarDotsAll) {
+//            Log.e("rangedate", date.toString())
+//        }
+//    }
 
 }
 

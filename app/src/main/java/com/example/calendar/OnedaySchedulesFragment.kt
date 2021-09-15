@@ -19,14 +19,18 @@ import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.Adapter.ScheduleList.Companion.MutablescheduleList
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
+import com.example.calendar.kakaoLogin.KakaoLogin
+import com.example.calendar.kakaoLogin.KakaoSDKInit
 import com.prolificinteractive.materialcalendarview.CalendarDay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 
 class OnedaySchedulesFragment : Fragment() {
     private lateinit var binding: ActivityOnedaySchedulesBinding
     private lateinit var get_context: Activity
     private lateinit var selectedDate: String
-
+    private lateinit var  recyclerViewAdapter : RecyclerViewAdapter
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Activity) {
@@ -57,16 +61,11 @@ class OnedaySchedulesFragment : Fragment() {
 
         oneDayMutableList()
 
-
         //recyclerview 달기
 
-        binding.recyclerView.adapter = recyclerAdapter
+        recyclerViewAdapter = RecyclerViewAdapter(requireActivity().application)
+        binding.recyclerView.adapter = recyclerViewAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
-
-
-
-
-
 
         return view
 
@@ -83,9 +82,35 @@ class OnedaySchedulesFragment : Fragment() {
         Log.e("datacheck","before"+oneDayMutable[0].memo.toString())
         MutablescheduleList.clear()
         oneDayMutable.clear()
-        ScheduleList.getScheules()
+       runBlocking {
+            Dispatchers.IO.apply {
+
+               val response = (requireActivity().application as KakaoSDKInit).service.getCalendar("${KakaoLogin.user_id}")
+               var responses = response.body()!!
+               for (i in responses.result) {
+                   val scheduleList = ScheduleList()
+                   scheduleList.end = i.dateEnd
+                   scheduleList.start = i.dateStart
+                   val content = i.content
+                   val splitString = content.split("@^")
+
+                   try {
+                       scheduleList.memo = splitString[1]
+                   } catch (e: Exception) {
+                   }
+                   scheduleList.title = splitString[0]
+                   scheduleList.id = i.id
+                   MutablescheduleList.add(scheduleList)
+               }
+
+           }
+
+
+
+
+       }
         oneDayMutableList()
-        recyclerAdapter.submitList(oneDayMutable)
+        recyclerViewAdapter.submitList(oneDayMutable)
         Log.e("datacheck","after"+oneDayMutable[0].memo.toString())
         Log.e("fragcheck","resume")
     }
@@ -116,7 +141,7 @@ class OnedaySchedulesFragment : Fragment() {
         }
 
         val oneDayMutable = mutableListOf<ScheduleList>()
-        val recyclerAdapter = RecyclerViewAdapter()
+
 
         fun oneDayMutableList() {
             //선택한 날짜의 schedulelist만 따로 담은 mutablelist

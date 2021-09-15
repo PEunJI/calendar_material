@@ -1,6 +1,7 @@
 package com.example.calendar.Adapter
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.ListAdapter
 import com.example.calendar.Retrofit.RetrofitService
 import com.example.calendar.databinding.ScheduleListBinding
 import com.example.calendar.kakaoLogin.KakaoLogin
+import com.example.calendar.kakaoLogin.KakaoSDKInit
 
 
 //class RecyclerViewAdapter(val itemList: MutableList<ScheduleList>, val inflater: LayoutInflater) :
@@ -253,7 +255,7 @@ import com.example.calendar.kakaoLogin.KakaoLogin
 //
 //}
 
-class RecyclerViewAdapter :ListAdapter<ScheduleList,RecyclerView.ViewHolder>(OnedayDiffCallback()) {
+class RecyclerViewAdapter(val application: Application) :ListAdapter<ScheduleList,RecyclerView.ViewHolder>(OnedayDiffCallback()) {
     inner class MyViewHolder(private val binding: ScheduleListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: ScheduleList) {
@@ -323,7 +325,7 @@ class RecyclerViewAdapter :ListAdapter<ScheduleList,RecyclerView.ViewHolder>(One
                         //삭제
                         val scheduleId = data.id
                         GlobalScope.launch {
-                            RetrofitService.service.deleteCalendar(
+                            (application as KakaoSDKInit).service.deleteCalendar(
                                 "$scheduleId",
                                 "${KakaoLogin.user_id}"
                             )

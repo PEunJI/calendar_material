@@ -3,28 +3,25 @@ package com.example.calendar.BaseActivity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
 import com.example.calendar.*
 import com.example.calendar.Adapter.ScheduleList
 import com.example.calendar.Adapter.ScheduleList.Companion.MutablescheduleList
-import com.example.calendar.OnedaySchedulesFragment.Companion.oneDayMutable
-import com.example.calendar.OnedaySchedulesFragment.Companion.oneDayMutableList
-import com.example.calendar.OnedaySchedulesFragment.Companion.recyclerAdapter
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
+import com.example.calendar.kakaoLogin.KakaoSDKInit
 import com.google.android.material.navigation.NavigationView
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.*
@@ -41,7 +38,29 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         /**스케줄 가져오기**/
-        ScheduleList.getScheules()
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val response =
+                (application as KakaoSDKInit).service.getCalendar("${KakaoLogin.user_id}")
+            var responses = response.body()!!
+            for (i in responses.result) {
+                val scheduleList = ScheduleList()
+                scheduleList.end = i.dateEnd
+                scheduleList.start = i.dateStart
+                val content = i.content
+                val splitString = content.split("@^")
+
+                try {
+                    scheduleList.memo = splitString[1]
+                } catch (e: Exception) {
+                }
+                scheduleList.title = splitString[0]
+                scheduleList.id = i.id
+                MutablescheduleList.add(scheduleList)
+            }
+
+        }
+
 
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,29 +72,34 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //툴바사용
         val profile_image = intent.getStringExtra("profile")
+        Log.e("profile_image", profile_image.toString())
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         val actionBar = supportActionBar
         actionBar!!.setDisplayHomeAsUpEnabled(true)   //왼쪽버튼
 
         var drawable: Bitmap?
-        //왼쪽 버튼에 프로필 사진 넣기
-        CoroutineScope(Dispatchers.Main).launch {
-            drawable =
-                withContext(Dispatchers.IO) {
-                    DownloadFilesTask.ImageLoader.loadImage(profile_image!!)
-                }
-            drawable = DownloadFilesTask.convertRoundedBitmap(drawable!!)
+        try {
 
-            toolbar.navigationIcon = BitmapDrawable(drawable)
+            //왼쪽 버튼에 프로필 사진 넣기
+            CoroutineScope(Dispatchers.Main).launch {
+                drawable =
+                    withContext(Dispatchers.IO) {
+                        DownloadFilesTask.ImageLoader.loadImage(profile_image!!)
+                    }
+                drawable = DownloadFilesTask.convertRoundedBitmap(drawable!!)
+
+                toolbar.navigationIcon = BitmapDrawable(drawable)
+            }
+        } catch (e: java.lang.Exception) {
         }
-
 
         /**
          * 네비게이션뷰
          */
         //왼쪽 버튼 눌렀을 때
-        toolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener()
+        {
             //drawer layout
             binding.drawerLayout.openDrawer(GravityCompat.START)
 
@@ -96,31 +120,31 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onRestart() {
         super.onRestart()
 
-        Log.e("activitycheck","onrestart")
+        Log.e("activitycheck", "onrestart")
 
     }
 
     override fun onResume() {
         super.onResume()
-        Log.e("activitycheck","onResume")
+        Log.e("activitycheck", "onResume")
 
     }
 
     override fun onPause() {
         super.onPause()
-        Log.e("activitycheck","onPause")
+        Log.e("activitycheck", "onPause")
 
     }
 
     override fun onStop() {
         super.onStop()
-        Log.e("activitycheck","onStop")
+        Log.e("activitycheck", "onStop")
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("activitycheck","onDestory")
+        Log.e("activitycheck", "onDestory")
 
     }
 
@@ -153,7 +177,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             R.id.toolbar_schedules ->
                 replaceFragment(AllSchedulesFragment.newInstance(), "alldays")
-               // Log.e("toolbar","toolbar")
+            // Log.e("toolbar","toolbar")
             R.id.toolbar_plus ->
                 //plus 눌렀을 때 달력 프래그먼트면 오늘 날짜로 일정입력 bottomfragment 띄우
                 if (getFragment("calendar") is CalendarFragment) {
@@ -168,7 +192,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 //onedayshcedulefragment면, 그날 날짜로 bottomfragment 띄우
                 else {
-                     val bottomSheet = ScheduleEnrollFragment()
+                    val bottomSheet = ScheduleEnrollFragment()
                     bottomSheet.apply {
                         arguments = Bundle().apply {
                             putString("year", CalendarFragment.selctedDate.year.toString())

@@ -3,33 +3,26 @@ package com.example.calendar
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.TimePicker
-import com.example.calendar.Retrofit.RetrofitService.Companion.service
 import com.example.calendar.databinding.FragmentScheduleEnrollBinding
 import com.example.calendar.kakaoLogin.KakaoLogin
+import com.example.calendar.kakaoLogin.KakaoSDKInit
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class ScheduleEnrollFragment : BottomSheetDialogFragment() {
@@ -223,7 +216,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
                         input["content"] =
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                        service.postCalendar("${KakaoLogin.user_id}", input)
+                        (requireActivity().application as KakaoSDKInit).service.postCalendar("${KakaoLogin.user_id}", input)
                     }
                     Log.e("postdata","${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
                     )
