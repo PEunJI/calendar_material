@@ -19,9 +19,21 @@ class KakaoSDKInit : Application() {
         KakaoSdk.init(this, "20bda91f9ba354f86d1df729923ed50a")
         Stetho.initializeWithDefaults(this)
 
+
+
+
+    }
+
+    fun createRetrofit(token : String){
         val header = Interceptor {
             val original = it.request()
-            it.proceed(original)
+            //로그인 되어 있으면
+                    val request = original.newBuilder()
+                        .header("Authorization", "${token}")
+                        .build()
+                    it.proceed(request)
+
+
         }
 
         val client = OkHttpClient.Builder()
@@ -38,7 +50,7 @@ class KakaoSDKInit : Application() {
 
 
         service = retrofit.create(CalendarService::class.java)
-
-
     }
+
+
 }

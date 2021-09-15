@@ -106,8 +106,9 @@ class KakaoLogin : AppCompatActivity() {
 
 
                 val a = CoroutineScope(Dispatchers.IO).async(start = CoroutineStart.LAZY) {
+
                     response =
-                       (application as KakaoSDKInit).service.getCalendar("${user_id}")
+                       (application as KakaoSDKInit).service.getCalendar()
                      //  (application as KakaoSDKInit).service.getCalendar("1857817164")
                     var responses = response!!.body()!!
                     for (i in responses.result) {
@@ -115,12 +116,7 @@ class KakaoLogin : AppCompatActivity() {
                     }
                 }
 
-                CoroutineScope(Dispatchers.Main).launch {
-
-                    job.await()
-                    a.start()
-                }
-
+                a.start()
                 Log.e("kakaoLogin","afterUserId: "+ user_id)
 
                 /**점찍기**/
