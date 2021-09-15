@@ -1,6 +1,7 @@
 package com.example.calendar.kakaoLogin
 
 import android.app.Application
+import android.util.Log
 import com.example.calendar.api.CalendarService
 import com.facebook.stetho.Stetho
 import com.facebook.stetho.okhttp3.StethoInterceptor
@@ -20,18 +21,15 @@ class KakaoSDKInit : Application() {
         Stetho.initializeWithDefaults(this)
 
 
-
-
     }
 
-    fun createRetrofit(token : String){
+    fun createRetrofit(token: Long) {
         val header = Interceptor {
             val original = it.request()
-            //로그인 되어 있으면
-                    val request = original.newBuilder()
-                        .header("Authorization", "${token}")
-                        .build()
-                    it.proceed(request)
+            val request = original.newBuilder()
+                .header("Authorization", "${token}")
+                .build()
+            it.proceed(request)
 
 
         }
@@ -48,6 +46,7 @@ class KakaoSDKInit : Application() {
             .client(client)
             .build()
 
+        Log.e("kakaoLogin","token+in+createRetrofit: "+ token)
 
         service = retrofit.create(CalendarService::class.java)
     }

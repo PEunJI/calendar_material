@@ -250,7 +250,7 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
                         input["content"] =
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
                         Log.e("putcalendar",input["content"].toString())
-                        (requireActivity().application as KakaoSDKInit).service.putCalendar("$id","${KakaoLogin.user_id}", input)
+                        (requireActivity().application as KakaoSDKInit).service.putCalendar("$id",input)
                     }
                     dismiss()
                 }

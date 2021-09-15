@@ -62,12 +62,15 @@ class CalendarFragment : Fragment() {
 
         //캘린더뷰에 날짜별로 색상 다르게 하는 decorator달기
         binding.calendarView.addDecorators(
+            EventDecorator(KakaoLogin.calendarDotsAll),
             SundayDecorator(),
             SaturdayDecorator(),
             TodayDecorator(get_context),
-            AlldayDecorator(),
-            EventDecorator(KakaoLogin.calendarDotsAll)
+            AlldayDecorator()
         )
+
+        Log.e("calendarDogs",KakaoLogin.calendarDotsAll.size.toString())
+
 
 
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->

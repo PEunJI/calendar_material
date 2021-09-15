@@ -2,6 +2,7 @@ package com.example.calendar.kakaoLogin
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.icu.util.Calendar.getInstance
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -20,6 +21,7 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Calendar.getInstance
 
 class KakaoLogin : AppCompatActivity() {
     private lateinit var binding: ActivityKakaoLoginBinding
@@ -53,11 +55,13 @@ class KakaoLogin : AppCompatActivity() {
         val callback: ((OAuthToken?, Throwable?) -> Unit) = { token, error ->
             //로그인 실패
             if (error != null) {
+
                 Log.e("kakaoLogin", "Kakao Login Failed :", error)
                 //로그인 성공
             } else if (token != null) {
             }
             updateKakaoLoginUi()
+
         }
 
         //로그인 버튼
@@ -75,49 +79,54 @@ class KakaoLogin : AppCompatActivity() {
     }
 
 
-    private fun checkToken() {
-        //토큰정보
-        UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
-            if (error != null) {
-                Log.e("kakaoLogin", "토큰 정보 보기 실패", error)
-            } else if (tokenInfo != null) {
-                KakaoLogin.user_id = tokenInfo.id
-                Log.i(
-                    "kakaoLogin", "토큰 정보 보기 성공" +
-                            "\n회원번호: ${tokenInfo.id}" +
-                            "\n만료시간: ${tokenInfo.expiresIn} 초" +
-                            "\n만료시간: ${tokenInfo.appId}" +
-                            "\nuserId : ${user_id} "
-                )
+  val checkTokenJob =
+
+        CoroutineScope(Dispatchers.Main).async {
+            //토큰정보
+            UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
+                if (error != null) {
+                    Log.e("kakaoLogin", "토큰 정보 보기 실패", error)
+                } else if (tokenInfo != null) {
+                    user_id = tokenInfo.id
+                    Log.i(
+                        "kakaoLogin", "토큰 정보 보기 성공" +
+                                "\n회원번호: ${tokenInfo.id}" +
+                                "\n만료시간: ${tokenInfo.expiresIn} 초" +
+                                "\n만료시간: ${tokenInfo.appId}" +
+                                "\nuserId : ${user_id} "
+                    )
+                }
             }
-        }
+
     }
 
 
     private fun updateKakaoLoginUi() {
         UserApiClient.instance.me { user, error ->
             //로그인이 되어 있을 때
-
             if (user != null) {
-
-               val job = CoroutineScope(Dispatchers.Main).async {
-                    checkToken()
-                }
+                Log.e("kakaoLogin", "when login sucess: ")
 
 
-                val a = CoroutineScope(Dispatchers.IO).async(start = CoroutineStart.LAZY) {
+                (application as KakaoSDKInit).createRetrofit(user_id)
 
+
+                val a = CoroutineScope(Dispatchers.IO).async{
+                    checkTokenJob.join()
                     response =
-                       (application as KakaoSDKInit).service.getCalendar()
-                     //  (application as KakaoSDKInit).service.getCalendar("1857817164")
+                        (application as KakaoSDKInit).service.getCalendar()
+                    //  (application as KakaoSDKInit).service.getCalendar("1857817164")
                     var responses = response!!.body()!!
                     for (i in responses.result) {
                         rangeDate(formatter.parse(i.dateStart), formatter.parse(i.dateEnd))
                     }
                 }
 
-                a.start()
-                Log.e("kakaoLogin","afterUserId: "+ user_id)
+                    Log.e("rangedate", calendarDotsAll.toString())
+
+
+               // a.start()
+                Log.e("kakaoLogin", "afterUserId: " + user_id)
 
                 /**점찍기**/
                 //응답받아서 날짜만 MutableList에 넣고, decorator에서 그 날짜에 dots를 찍어준다.
@@ -147,16 +156,15 @@ class KakaoLogin : AppCompatActivity() {
     fun rangeDate(startDate: Date, endDate: Date) {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
         val c = java.util.Calendar.getInstance()
+        calendarDotsAll.clear()
         var currentDay = startDate
         while (currentDay <= endDate) {
-            calendarDotsAll.add(CalendarDay(currentDay))
+           calendarDotsAll.add(CalendarDay(currentDay))
             c.time = currentDay
             c.add(java.util.Calendar.DAY_OF_MONTH, 1)
             currentDay = c.time
         }
-        for (date in calendarDotsAll) {
-            Log.e("rangedate", date.toString())
-        }
+
 
     }
 
@@ -164,7 +172,7 @@ class KakaoLogin : AppCompatActivity() {
         var user_id = 0L
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
         var response: Response<Calendar>? = null
-        val calendarDotsAll: java.util.HashSet<CalendarDay> = java.util.HashSet<CalendarDay>()
+        val calendarDotsAll: HashSet<CalendarDay> = HashSet()
     }
 }
 

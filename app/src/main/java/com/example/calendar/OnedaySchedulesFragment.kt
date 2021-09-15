@@ -85,7 +85,7 @@ class OnedaySchedulesFragment : Fragment() {
        runBlocking {
             Dispatchers.IO.apply {
 
-               val response = (requireActivity().application as KakaoSDKInit).service.getCalendar("${KakaoLogin.user_id}")
+               val response = (requireActivity().application as KakaoSDKInit).service.getCalendar()
                var responses = response.body()!!
                for (i in responses.result) {
                    val scheduleList = ScheduleList()

@@ -41,7 +41,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         CoroutineScope(Dispatchers.IO).launch {
 
             val response =
-                (application as KakaoSDKInit).service.getCalendar("${KakaoLogin.user_id}")
+                (application as KakaoSDKInit).service.getCalendar()
             var responses = response.body()!!
             for (i in responses.result) {
                 val scheduleList = ScheduleList()

@@ -216,7 +216,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
                         input["content"] =
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                        (requireActivity().application as KakaoSDKInit).service.postCalendar("${KakaoLogin.user_id}", input)
+                        (requireActivity().application as KakaoSDKInit).service.postCalendar(input)
                     }
                     Log.e("postdata","${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
                     )

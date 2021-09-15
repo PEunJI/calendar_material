@@ -326,8 +326,7 @@ class RecyclerViewAdapter(val application: Application) :ListAdapter<ScheduleLis
                         val scheduleId = data.id
                         GlobalScope.launch {
                             (application as KakaoSDKInit).service.deleteCalendar(
-                                "$scheduleId",
-                                "${KakaoLogin.user_id}"
+                                "$scheduleId"
                             )
                         }
                         ad.dismiss()
