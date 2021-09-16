@@ -1,6 +1,6 @@
 package com.example.calendar.Adapter
 
-data class ScheduleList(
+data class Schedule(
     var title: String? = null,
     var start: String? = null,
     var end: String? = null,
@@ -10,9 +10,7 @@ data class ScheduleList(
 
     companion object {
 
-        val MutablescheduleList = mutableListOf<ScheduleList>()
-
-
+        val MutablescheduleList = mutableListOf<Schedule>()
 
     }
 

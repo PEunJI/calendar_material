@@ -1,19 +1,18 @@
 package com.example.calendar.Adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.calendar.OnedaySchedulesFragment
 
-class OnedayDiffCallback : DiffUtil.ItemCallback<ScheduleList>() {
+class OnedayDiffCallback : DiffUtil.ItemCallback<Schedule>() {
     override fun areItemsTheSame(
-        oldItem: ScheduleList,
-        newItem: ScheduleList
+        oldItem: Schedule,
+        newItem: Schedule
     ): Boolean {
         return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(
-        oldItem: ScheduleList,
-        newItem: ScheduleList
+        oldItem: Schedule,
+        newItem: Schedule
     ): Boolean {
         return oldItem==newItem
     }

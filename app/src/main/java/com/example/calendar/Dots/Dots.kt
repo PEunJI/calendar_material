@@ -1,15 +1,5 @@
 package com.example.calendar.Dots
 
-import android.util.Log
-import androidx.core.net.ParseException
-import com.example.calendar.kakaoLogin.KakaoLogin
-import com.example.calendar.kakaoLogin.KakaoSDKInit
-import com.prolificinteractive.materialcalendarview.CalendarDay
-import kotlinx.coroutines.*
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashSet
-
 class Dots {
 
 

@@ -2,7 +2,6 @@ package com.example.calendar
 
 import android.app.Activity
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,8 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calendar.Adapter.RecyclerViewAdapter
-import com.example.calendar.Adapter.ScheduleList
-import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
+import com.example.calendar.Adapter.Schedule
 import com.example.calendar.databinding.FragmentAllSchedulesBinding
 
 class AllSchedulesFragment : Fragment() {
@@ -40,7 +38,7 @@ class AllSchedulesFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
 
-        for(i in ScheduleList.MutablescheduleList){
+        for(i in Schedule.MutablescheduleList){
         Log.e("adpaterlist",i.memo.toString())}
 
         return view

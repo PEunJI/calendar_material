@@ -5,23 +5,16 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
-import com.example.calendar.Adapter.ScheduleList
-import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.ReviseDatePicker
 import com.example.calendar.Picker.ReviseTimePicker
-import com.example.calendar.Picker.TimePicker
-import com.example.calendar.Retrofit.RetrofitService
 import com.example.calendar.databinding.FragmentReviseEnrollBinding
-import com.example.calendar.databinding.FragmentScheduleEnrollBinding
-import com.example.calendar.kakaoLogin.KakaoLogin
-import com.example.calendar.kakaoLogin.KakaoSDKInit
+import com.example.calendar.kakaoLogin.MasterApplication
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -250,7 +243,7 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
                         input["content"] =
                             binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
                         Log.e("putcalendar",input["content"].toString())
-                        (requireActivity().application as KakaoSDKInit).service.putCalendar("$id",input)
+                        (requireActivity().application as MasterApplication).service.putCalendar("$id",input)
                     }
                     dismiss()
                 }

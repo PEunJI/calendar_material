@@ -14,13 +14,14 @@ import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.TimePicker
 import com.example.calendar.databinding.FragmentScheduleEnrollBinding
-import com.example.calendar.kakaoLogin.KakaoLogin
-import com.example.calendar.kakaoLogin.KakaoSDKInit
+import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
+import com.example.calendar.kakaoLogin.MasterApplication
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,7 +30,6 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
     //현재 날짜
     val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
-
     var mYear: Int = 0
     var mMonth: Int = 0
     var mDay: Int = 0
@@ -49,10 +49,10 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
             get_context = context as Activity
         }
 
-            mYear = arguments?.getString("year")!!.toInt()
-            mMonth = arguments?.getString("month")!!.toInt()
-            mDay = arguments?.getString("day")!!.toInt()
-        }
+        mYear = arguments?.getString("year")!!.toInt()
+        mMonth = arguments?.getString("month")!!.toInt()
+        mDay = arguments?.getString("day")!!.toInt()
+    }
 
 
     //다이어로그 펼쳐진 상태로 보이게하기
@@ -87,12 +87,11 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         //첫세팅 (누른날짜~누시간+1시간)
 
 
-            start_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
-            start_liveHour.value = "${mHour}시 ${mMinute}분"
-            end_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
-            end_liveHour.value = "${mHour + 1}시 ${mMinute}분"
-            Log.d("dateTest2", "${mMonth}월")
-
+        start_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
+        start_liveHour.value = "${mHour}시 ${mMinute}분"
+        end_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
+        end_liveHour.value = "${mHour + 1}시 ${mMinute}분"
+        Log.d("dateTest2", "${mMonth}월")
 
 
         //cancle button
@@ -107,29 +106,29 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         var returnStartHour = MutableLiveData<Array<Long>>()
         var returnEndHour = MutableLiveData<Array<Long>>()
 
-            returnStartDay.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
-            returnEndDate.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
-            returnStartHour.value = arrayOf(mHour.toLong(), mMinute.toLong())
-            returnEndHour.value = arrayOf(mHour.toLong() + 1, mMinute.toLong())
+        returnStartDay.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
+        returnEndDate.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
+        returnStartHour.value = arrayOf(mHour.toLong(), mMinute.toLong())
+        returnEndHour.value = arrayOf(mHour.toLong() + 1, mMinute.toLong())
 
 
         val startdate_picker =
             DatePicker(
-               start_liveDate,
+                start_liveDate,
                 returnStartDay,
-                 get_context,
-                 mYear,
-                 mMonth,
-                 mDay,
-                 end_liveDate
+                get_context,
+                mYear,
+                mMonth,
+                mDay,
+                end_liveDate
             )
         val enddate_picker =
             DatePicker(
-                 end_liveDate,
+                end_liveDate,
                 returnEndDate,
                 get_context,
                 mYear,
-                 mMonth,
+                mMonth,
                 mDay
             )
         val starthour_picker =
@@ -137,32 +136,32 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
         //시작 날짜 눌렀을 때 datepicker띄우기
         binding.startDatePicker.setOnClickListener {
-                startdate_picker.datePickerDialog.show()
+            startdate_picker.datePickerDialog.show()
 
         }
 
         //시작 시간 눌렀을 때 timepicker띄우기
         binding.startTimePicker.setOnClickListener {
-                starthour_picker.timePickerDialog.apply {
-                    this.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-                }.show()
+            starthour_picker.timePickerDialog.apply {
+                this.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+            }.show()
 
         }
 
         //종료 날짜 눌렀을 때 datepicker띄우기
         binding.endDatePicker.setOnClickListener {
-                //종료 날짜는 시작날짜 이후로만 선택되게
-                //날짜 String->dateFormat->TimeMillis()
-                var date =
-                    "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-                Log.d("dateLog", "" + returnStartDay.value!![2])
-                val dateFormat = simpleDateFormat.parse(date)
+            //종료 날짜는 시작날짜 이후로만 선택되게
+            //날짜 String->dateFormat->TimeMillis()
+            var date =
+                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            Log.d("dateLog", "" + returnStartDay.value!![2])
+            val dateFormat = simpleDateFormat.parse(date)
 
-                enddate_picker.datePickerDialog.apply {
-                    datePicker.minDate = (dateFormat.time)
-                }.show()
-                Log.d("dateTest", date)
+            enddate_picker.datePickerDialog.apply {
+                datePicker.minDate = (dateFormat.time)
+            }.show()
+            Log.d("dateTest", date)
 
         }
 
@@ -178,7 +177,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         //종료 시간은 시작 시간 이후로만 선택되게 하고 싶지만 커스텀해야하는 것 같다. 구찮다. 그냥 토스트를 띄우고 스타트타임+1시간으로 고정시키자
         binding.endTimePicker.setOnClickListener {
 
-                endhour_picker.timePickerDialog_end.show()
+            endhour_picker.timePickerDialog_end.show()
 
         }
 
@@ -209,26 +208,50 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                     Toast.makeText(get_context, "제목은 필수입니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     //등록
-                    GlobalScope.launch {
-                        input["dateStart"] =
-                            "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                        input["dateEnd"] =
-                            "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
-                        input["content"] =
-                            binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                        (requireActivity().application as KakaoSDKInit).service.postCalendar(input)
-                    }
-                    Log.e("postdata","${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                    )
-                    Log.e("postdata",  "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}")
-                    Log.e("postdata", binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                    )
+                    enrollCoroutine = runBlocking {
 
+                        withContext(Dispatchers.IO) {
+                            input["dateStart"] =
+                                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                            input["dateEnd"] =
+                                "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+                            input["content"] =
+                                binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
+                            (requireActivity().application as MasterApplication).service.postCalendar(
+                                input
+                            )
+                        }
+
+                        Log.e(
+                            "postdata",
+                            "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                        )
+                        Log.e(
+                            "postdata",
+                            "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+                        )
+                        Log.e(
+                            "postdata",
+                            binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
+                        )
+
+                    }
+                    //등록완료하고 AlldayDots livedata바꿔줌
+                    runBlocking {
+                        myViewModel.getAlldayDots(requireActivity())
+                        myViewModel.updateOneDaySchedule(requireActivity())
+                    }
                     dismiss()
+
+
                 }
             }
         }
         return binding.root
+    }
+
+    companion object {
+        var enrollCoroutine: Int? = null
     }
 
 }

@@ -2,35 +2,34 @@ package com.example.calendar.kakaoLogin
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.icu.util.Calendar.getInstance
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.Model.Calendar
+import com.example.calendar.MyViewModel
 import com.example.calendar.R
 import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
-import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
 import retrofit2.Response
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Calendar.getInstance
 
 class KakaoLogin : AppCompatActivity() {
     private lateinit var binding: ActivityKakaoLoginBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         binding = ActivityKakaoLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         updateKakaoLoginUi()
-
         //해쉬키
         try {
             val info = packageManager.getPackageInfo(
@@ -55,13 +54,11 @@ class KakaoLogin : AppCompatActivity() {
         val callback: ((OAuthToken?, Throwable?) -> Unit) = { token, error ->
             //로그인 실패
             if (error != null) {
-
                 Log.e("kakaoLogin", "Kakao Login Failed :", error)
                 //로그인 성공
             } else if (token != null) {
             }
             updateKakaoLoginUi()
-
         }
 
         //로그인 버튼
@@ -79,10 +76,10 @@ class KakaoLogin : AppCompatActivity() {
     }
 
 
-  val checkTokenJob =
+    val checkTokenJob =
 
         CoroutineScope(Dispatchers.Main).async {
-            //토큰정보
+            //토큰정보가져와서 user_id 변수에 저장
             UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
                 if (error != null) {
                     Log.e("kakaoLogin", "토큰 정보 보기 실패", error)
@@ -97,44 +94,29 @@ class KakaoLogin : AppCompatActivity() {
                     )
                 }
             }
-
-    }
+        }
 
 
     private fun updateKakaoLoginUi() {
         UserApiClient.instance.me { user, error ->
             //로그인이 되어 있을 때
             if (user != null) {
-                Log.e("kakaoLogin", "when login sucess: ")
-
-
-                (application as KakaoSDKInit).createRetrofit(user_id)
-
-
-                val a = CoroutineScope(Dispatchers.IO).async{
-                    checkTokenJob.join()
-                    response =
-                        (application as KakaoSDKInit).service.getCalendar()
-                    //  (application as KakaoSDKInit).service.getCalendar("1857817164")
-                    var responses = response!!.body()!!
-                    for (i in responses.result) {
-                        rangeDate(formatter.parse(i.dateStart), formatter.parse(i.dateEnd))
-                    }
-                }
-
-                    Log.e("rangedate", calendarDotsAll.toString())
-
-
-               // a.start()
-                Log.e("kakaoLogin", "afterUserId: " + user_id)
-
                 /**점찍기**/
-                //응답받아서 날짜만 MutableList에 넣고, decorator에서 그 날짜에 dots를 찍어준다.
+                //로그인이 되어 있으면 retrofit service를 갱신?새로만든?다.
+                (application as MasterApplication).createRetrofit(user_id)
+                runBlocking {
+
+                        //checkToken작업이 완료된 후에 service.getCalendar작업을 한다
+                        checkTokenJob.join()
+                       myViewModel.getAlldayDots(this@KakaoLogin)
+
+                }
                 startMainActivity(
                     user.kakaoAccount!!.profile!!.thumbnailImageUrl!!,
                     user.kakaoAccount!!.profile!!.nickname!!
                 )
-            } else {
+            } //로그인 실패 시
+            else {
                 binding.btnKakaoLogin.visibility = View.VISIBLE
                 binding.profileImage.setImageResource(R.drawable.ic_calendar)
             }
@@ -142,6 +124,7 @@ class KakaoLogin : AppCompatActivity() {
     }
 
 
+    //로그인 됐으면 BaseActivity로 이동
     private fun startMainActivity(url: String, nickname: String) {
         val intent = Intent(this, BaseActivity::class.java)
 
@@ -153,26 +136,12 @@ class KakaoLogin : AppCompatActivity() {
     }
 
 
-    fun rangeDate(startDate: Date, endDate: Date) {
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        val c = java.util.Calendar.getInstance()
-        calendarDotsAll.clear()
-        var currentDay = startDate
-        while (currentDay <= endDate) {
-           calendarDotsAll.add(CalendarDay(currentDay))
-            c.time = currentDay
-            c.add(java.util.Calendar.DAY_OF_MONTH, 1)
-            currentDay = c.time
-        }
-
-
-    }
-
     companion object {
         var user_id = 0L
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
         var response: Response<Calendar>? = null
-        val calendarDotsAll: HashSet<CalendarDay> = HashSet()
+        //   val calendarDotsAll =MutableLiveData<HashSet<CalendarDay>>()
+        lateinit var myViewModel : MyViewModel
     }
 }
 

@@ -16,12 +16,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.example.calendar.*
-import com.example.calendar.Adapter.ScheduleList
-import com.example.calendar.Adapter.ScheduleList.Companion.MutablescheduleList
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
-import com.example.calendar.kakaoLogin.KakaoSDKInit
 import com.google.android.material.navigation.NavigationView
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.*
@@ -37,30 +34,29 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
 
 
-        /**스케줄 가져오기**/
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val response =
-                (application as KakaoSDKInit).service.getCalendar()
-            var responses = response.body()!!
-            for (i in responses.result) {
-                val scheduleList = ScheduleList()
-                scheduleList.end = i.dateEnd
-                scheduleList.start = i.dateStart
-                val content = i.content
-                val splitString = content.split("@^")
-
-                try {
-                    scheduleList.memo = splitString[1]
-                } catch (e: Exception) {
-                }
-                scheduleList.title = splitString[0]
-                scheduleList.id = i.id
-                MutablescheduleList.add(scheduleList)
-            }
-
-        }
-
+//        /**스케줄 가져오기**/
+//        CoroutineScope(Dispatchers.IO).launch {
+//
+//            val response =
+//                (application as MasterApplication).service.getCalendar()
+//            var responses = response.body()!!
+//            for (i in responses.result) {
+//                val scheduleList = ScheduleList()
+//                scheduleList.end = i.dateEnd
+//                scheduleList.start = i.dateStart
+//                val content = i.content
+//                val splitString = content.split("@^")
+//
+//                try {
+//                    scheduleList.memo = splitString[1]
+//                } catch (e: Exception) {
+//                }
+//                scheduleList.title = splitString[0]
+//                scheduleList.id = i.id
+//                MutablescheduleList.add(scheduleList)
+//            }
+//
+//        }
 
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -70,7 +66,9 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         replaceFragment(calendarFragment, "calendar")
 
 
-        //툴바사용
+        /**
+         * 툴바사용
+         */
         val profile_image = intent.getStringExtra("profile")
         Log.e("profile_image", profile_image.toString())
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -80,7 +78,6 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         var drawable: Bitmap?
         try {
-
             //왼쪽 버튼에 프로필 사진 넣기
             CoroutineScope(Dispatchers.Main).launch {
                 drawable =
@@ -103,8 +100,10 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //drawer layout
             binding.drawerLayout.openDrawer(GravityCompat.START)
 
+            //이름이랑 프사 넣기
             val nav_nickname = findViewById<TextView>(R.id.nav_nickname)
             nav_nickname.text = intent.getStringExtra("profile_nickname").toString()
+
             val nav_profile_img = findViewById<ImageView>(R.id.nav_profile_img)
             Glide.with(this)
                 .load(profile_image)
@@ -112,41 +111,9 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .into(nav_profile_img)
         }
 
-
         binding.navigationView.setNavigationItemSelectedListener(this)
     }
 
-    //스케줄 다시 가져오기
-    override fun onRestart() {
-        super.onRestart()
-
-        Log.e("activitycheck", "onrestart")
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("activitycheck", "onResume")
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.e("activitycheck", "onPause")
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.e("activitycheck", "onStop")
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("activitycheck", "onDestory")
-
-    }
 
     //커스텀 툴바 적용
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -162,22 +129,24 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //커스텀 툴바 메뉴 눌렀을 때
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            //새로고침 버튼(오늘날짜에 원이 찍힌 캘린더로이동)
             R.id.toolbar_today ->
-
                 // binding.calendarView.setDateSelected(calendar.time, true)
                 try {
                     //액티비티 화면 재갱신 시키는 코드
                     val intent = intent
-                    finish(); //현재 액티비티 종료 실시
+                    finish() //현재 액티비티 종료 실시
                     overridePendingTransition(0, 0); //인텐트 애니메이션 없애기
-                    startActivity(intent); //현재 액티비티 재실행 실시
-                    overridePendingTransition(0, 0); //인텐트 애니메이션 없애기
+                    startActivity(intent) //현재 액티비티 재실행 실시
+                    overridePendingTransition(0, 0) //인텐트 애니메이션 없애기
                 } catch (e: Exception) {
-                    e.printStackTrace();
+                    e.printStackTrace()
                 }
+            //allSchedules 버튼
             R.id.toolbar_schedules ->
                 replaceFragment(AllSchedulesFragment.newInstance(), "alldays")
             // Log.e("toolbar","toolbar")
+            //+버튼
             R.id.toolbar_plus ->
                 //plus 눌렀을 때 달력 프래그먼트면 오늘 날짜로 일정입력 bottomfragment 띄우
                 if (getFragment("calendar") is CalendarFragment) {
@@ -209,6 +178,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //네비게이션 메뉴 선택시
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            //로그아웃 클릭시 로그아웃 하고 로그인 액티비티로 이동
             R.id.logout -> UserApiClient.instance.logout {
                 val intent = Intent(this@BaseActivity, KakaoLogin::class.java)
                 startActivity(intent)
@@ -235,7 +205,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
         var fragmentManager: FragmentManager? = null
-    }
 
+    }
 
 }
