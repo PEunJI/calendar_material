@@ -3,6 +3,7 @@ package com.example.calendar
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,6 @@ import com.example.calendar.ColoredDate.*
 import com.example.calendar.databinding.CalendarFragBinding
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import kotlinx.coroutines.runBlocking
 
 
 class CalendarFragment : Fragment() {
@@ -39,9 +39,7 @@ class CalendarFragment : Fragment() {
         binding = CalendarFragBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        runBlocking {
-            myViewModel.getAlldayDots(get_context)
-        }
+
         // 뷰모델에 값이 변경될 때 할 행동
         myViewModel.calendarDotsAll.observe(viewLifecycleOwner, Observer {
             binding.calendarView.addDecorators(
@@ -49,9 +47,13 @@ class CalendarFragment : Fragment() {
             )
         })
 
+
+        Log.e("flowcheckk","캘린더프래그먼트 전환완료 ")
+
+
         //캘린더뷰에 날짜별로 색상 다르게 하는 decorator달기
         binding.calendarView.addDecorators(
-            EventDecorator(myViewModel.calendarDotsAll),
+          //  EventDecorator(myViewModel.calendarDotsAll),
             SundayDecorator(),
             SaturdayDecorator(),
             TodayDecorator(get_context),

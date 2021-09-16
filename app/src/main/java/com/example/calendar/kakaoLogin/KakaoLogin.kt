@@ -106,9 +106,11 @@ class KakaoLogin : AppCompatActivity() {
                 (application as MasterApplication).createRetrofit(user_id)
                 runBlocking {
 
-                        //checkToken작업이 완료된 후에 service.getCalendar작업을 한다
-                        checkTokenJob.join()
-                       myViewModel.getAlldayDots(this@KakaoLogin)
+                    //checkToken작업이 완료된 후에 service.getCalendar작업을 한다
+                    checkTokenJob.join()
+                    myViewModel.getAlldayDots(this@KakaoLogin)
+
+                    Log.e("flowcheckk", "로그인 액티비티에서 함수호출 완료 " + myViewModel.calendarDotsAll.value?.size)
 
                 }
                 startMainActivity(
@@ -140,8 +142,9 @@ class KakaoLogin : AppCompatActivity() {
         var user_id = 0L
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
         var response: Response<Calendar>? = null
+
         //   val calendarDotsAll =MutableLiveData<HashSet<CalendarDay>>()
-        lateinit var myViewModel : MyViewModel
+        lateinit var myViewModel: MyViewModel
     }
 }
 
