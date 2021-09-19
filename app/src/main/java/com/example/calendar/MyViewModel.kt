@@ -9,17 +9,18 @@ import com.example.calendar.Adapter.Schedule
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.MasterApplication
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashSet
 
 class MyViewModel : ViewModel() {
+    private var hashDate = HashSet<CalendarDay>()
 
     // 내부에서 설정하는 자료형은 private 뮤터블로 & 변수명 앞에 언더바
     // 변경가능하도록 설정
-    private val _calendarDotsAll = MutableLiveData<HashSet<CalendarDay>>()
+    private lateinit var _calendarDotsAll: MutableLiveData<HashSet<CalendarDay>>
+
 
     //외부에서는 언더바없이 변수이름 설정 & mutable이 아닌 그냥 livedata로 값 변경 x & public
     //get할때 mutablelivedata를 반환하도록 설정
@@ -42,28 +43,29 @@ class MyViewModel : ViewModel() {
     /**
      * calendarDotsAll값 변경하는 메소드
      */
-     fun getAlldayDots(activity: Activity) {
+    suspend fun getAlldayDots(activity: Activity) {
 
-        runBlocking {
 
-            withContext(Dispatchers.IO) {
-                KakaoLogin.response =
-                    (activity.application as MasterApplication).service.getCalendar()
-            }
-        }
+        val job = CoroutineScope(Dispatchers.IO).async {
+            KakaoLogin.response =
+                (activity.application as MasterApplication).service.getCalendar()
+        }.await()
+
         //calendarDotsAll 초기화
-        _calendarDotsAll.value?.clear()
+        //_calendarDotsAll.value?.clear()
         //응답(일정) 받아서 일정 있는 날은 모두 calendarDotsAll에 넣어준다.
         //코루틴 실행 종료되면 dots 찍어줄거임.
         var responses = KakaoLogin.response!!.body()!!
+        hashDate.clear()
 
         for (i in responses.result) {
             rangeDate(
                 KakaoLogin.formatter.parse(i.dateStart),
                 KakaoLogin.formatter.parse(i.dateEnd)
             )
-
         }
+        Log.e("enrollReset","dot livedata 설정 완료")
+        Log.e("enrollReset",""+calendarDotsAll.value?.size)
 
 
     }
@@ -75,12 +77,13 @@ class MyViewModel : ViewModel() {
         //startday가 enddate보다 작을때 동안
         while (currentDay <= endDate) {
             //currentday를 calendarDotsAll에 추가한다
-            _calendarDotsAll.value?.add(CalendarDay(currentDay))
+            hashDate.add(CalendarDay(currentDay))
             //currentday의 다음날을 다시 currentday로 초기화해주고 while문반복
             temp_day.time = currentDay
             temp_day.add(java.util.Calendar.DAY_OF_MONTH, 1) //currentday의 다음날
             currentDay = temp_day.time
         }
+        _calendarDotsAll = MutableLiveData<HashSet<CalendarDay>>(hashDate)
 
     }
 
@@ -89,7 +92,7 @@ class MyViewModel : ViewModel() {
      */
     fun updateOneDaySchedule(activity: Activity) {
         Schedule.MutablescheduleList.clear()
-        _oneDayLivedata.value!!.clear()
+        _oneDayLivedata.value?.clear()
         //모든 일정을 받아와서 일정 하나하나를 shceduleList객체로 만든 다음 그 객체를 MutablescheduleList(모든스케줄이있는 mutableList)에 추가한다.
         runBlocking {
             withContext(Dispatchers.IO) {
@@ -116,9 +119,8 @@ class MyViewModel : ViewModel() {
                 }
             }
             Log.e("oneDayReset", "서버에서 다시 일정 받아오기 완료")
+
         }
-
-
         //MutablescheduleList을 이용해서 선택한 날짜의 일정리스트만 만든다
         getThedayFromAll()
         Log.e("oneDayReset", "선택한 날짜의 일정리스트만 만든다")

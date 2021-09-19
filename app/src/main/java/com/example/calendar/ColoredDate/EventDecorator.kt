@@ -13,9 +13,6 @@ class EventDecorator(var dates: LiveData<HashSet<CalendarDay>>): DayViewDecorato
 
     override fun shouldDecorate(day: CalendarDay): Boolean {
         Log.e("calendarDots",dates.toString())
-        for ( i in dates.value!!.iterator()) {
-            Log.e("initt", "dates: " + i)
-        }
         return dates.value!!.contains(day)
     }
 

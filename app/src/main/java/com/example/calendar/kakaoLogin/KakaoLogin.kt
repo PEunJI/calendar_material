@@ -7,7 +7,9 @@ import android.util.Base64
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewTreeLifecycleOwner
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.Model.Calendar
 import com.example.calendar.MyViewModel
@@ -110,9 +112,8 @@ class KakaoLogin : AppCompatActivity() {
                     checkTokenJob.join()
                     myViewModel.getAlldayDots(this@KakaoLogin)
 
-                    Log.e("flowcheckk", "로그인 액티비티에서 함수호출 완료 " + myViewModel.calendarDotsAll.value?.size)
-
                 }
+
                 startMainActivity(
                     user.kakaoAccount!!.profile!!.thumbnailImageUrl!!,
                     user.kakaoAccount!!.profile!!.nickname!!

@@ -19,9 +19,7 @@ import com.example.calendar.kakaoLogin.MasterApplication
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -210,7 +208,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                     //등록
                     enrollCoroutine = runBlocking {
 
-                        withContext(Dispatchers.IO) {
+                        val job = CoroutineScope(Dispatchers.IO).async {
                             input["dateStart"] =
                                 "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
                             input["dateEnd"] =
@@ -222,36 +220,25 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             )
                         }
 
-                        Log.e(
-                            "postdata",
-                            "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                        )
-                        Log.e(
-                            "postdata",
-                            "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
-                        )
-                        Log.e(
-                            "postdata",
-                            binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                        )
-
-                    }
-                    //등록완료하고 AlldayDots livedata바꿔줌
-                    runBlocking {
-                        myViewModel.getAlldayDots(requireActivity())
-                        myViewModel.updateOneDaySchedule(requireActivity())
+                        job.join()
+                        //등록완료하고 AlldayDots livedata바꿔줌
+                        val job2 = CoroutineScope(Dispatchers.IO).async {
+                            myViewModel.getAlldayDots(requireActivity())
+                            //  myViewModel.updateOneDaySchedule(requireActivity())
+                        }
+                        job2.join()
                     }
                     dismiss()
-
-
                 }
             }
+
         }
         return binding.root
+
     }
 
     companion object {
-        var enrollCoroutine: Int? = null
+        var enrollCoroutine: Unit? = null
     }
 
 }
