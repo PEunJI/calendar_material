@@ -65,7 +65,8 @@ class MyViewModel : ViewModel() {
             )
         }
         Log.e("enrollReset","dot livedata 설정 완료")
-        Log.e("enrollReset",""+calendarDotsAll.value?.size)
+        for(i in calendarDotsAll.value!!.iterator())
+        Log.e("enrollReset",""+i)
 
 
     }

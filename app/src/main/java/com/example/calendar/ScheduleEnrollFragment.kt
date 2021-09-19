@@ -19,6 +19,7 @@ import com.example.calendar.kakaoLogin.MasterApplication
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -211,8 +212,37 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                         val job = CoroutineScope(Dispatchers.IO).async {
                             input["dateStart"] =
                                 "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                            input["dateEnd"] =
-                                "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+
+                            //23시에 등록하면 다음날 24시로 등록되서 오류나는 부분 해결 (다음날 00시로 명시)
+                            if (returnEndHour.value!![0] != 24L) {
+                                input["dateEnd"] =
+                                    "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+                            } else {
+
+                                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+                                val next_date =
+                                    formatter.parse("${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}")
+                                val cal = Calendar.getInstance()
+                                cal.time = next_date
+                                // cal.add(java.util.Calendar.DAY_OF_MONTH, 1)
+
+
+                                input["dateEnd"] =
+                                    "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.MONTH) + 1}-${
+                                        cal.get(
+                                            Calendar.DATE
+                                        )
+                                    } 00:${cal.get(Calendar.MINUTE)}"
+                                Log.e(
+                                    "calendarcheck",
+                                    "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.MONTH) + 1}-${
+                                        cal.get(Calendar.DATE)
+                                    } 00:${cal.get(Calendar.MINUTE)}"
+                                )
+
+                            }
+
+
                             input["content"] =
                                 binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
                             (requireActivity().application as MasterApplication).service.postCalendar(

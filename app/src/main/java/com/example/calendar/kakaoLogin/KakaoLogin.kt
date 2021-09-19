@@ -7,9 +7,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewTreeLifecycleOwner
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.Model.Calendar
 import com.example.calendar.MyViewModel

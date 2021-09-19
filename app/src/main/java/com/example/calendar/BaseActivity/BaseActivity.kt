@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.calendar.*
+import com.example.calendar.ColoredDate.EventDecorator
 import com.example.calendar.databinding.ActivityBaseBinding
 import com.example.calendar.kakaoLogin.DownloadFilesTask
 import com.example.calendar.kakaoLogin.KakaoLogin
@@ -61,6 +62,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
 
         //초기 프래그먼트 캘린더프래그먼트로 지정

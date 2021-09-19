@@ -8,7 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.calendar.BaseActivity.BaseActivity
@@ -23,7 +24,6 @@ class CalendarFragment : Fragment() {
     private lateinit var binding: CalendarFragBinding
     private lateinit var get_context: Activity
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Activity) {
@@ -31,6 +31,7 @@ class CalendarFragment : Fragment() {
 
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,14 +42,6 @@ class CalendarFragment : Fragment() {
 
         binding = CalendarFragBinding.inflate(inflater, container, false)
         val view = binding.root
-
-        // 뷰모델에 값이 변경될 때 할 행동
-        myViewModel.calendarDotsAll.observe(viewLifecycleOwner, Observer {
-            binding.calendarView.addDecorators(
-                EventDecorator(myViewModel.calendarDotsAll)
-            )
-            Log.e("enrollReset", "점찍기observe")
-        })
 
 
         //캘린더뷰에 날짜별로 색상 다르게 하는 decorator달기
@@ -72,6 +65,18 @@ class CalendarFragment : Fragment() {
 
         return view
 
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // 뷰모델에 값이 변경될 때 할 행동
+        myViewModel.calendarDotsAll.observe(viewLifecycleOwner, Observer {
+            Log.e("enrollReset", "점찍기observe")
+            binding.calendarView.addDecorators(
+                EventDecorator(myViewModel.calendarDotsAll)
+            )
+        })
     }
 
 
