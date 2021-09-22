@@ -15,11 +15,11 @@ import java.util.*
 import kotlin.collections.HashSet
 
 class MyViewModel : ViewModel() {
-    private var hashDate = HashSet<CalendarDay>()
 
     // 내부에서 설정하는 자료형은 private 뮤터블로 & 변수명 앞에 언더바
     // 변경가능하도록 설정
-    private lateinit var _calendarDotsAll: MutableLiveData<HashSet<CalendarDay>>
+    private var _calendarDotsAll = MutableLiveData<HashSet<CalendarDay>>()
+    val tempHash = HashSet<CalendarDay>()
 
 
     //외부에서는 언더바없이 변수이름 설정 & mutable이 아닌 그냥 livedata로 값 변경 x & public
@@ -52,11 +52,11 @@ class MyViewModel : ViewModel() {
         }.await()
 
         //calendarDotsAll 초기화
-        //_calendarDotsAll.value?.clear()
+        _calendarDotsAll.value?.clear()
         //응답(일정) 받아서 일정 있는 날은 모두 calendarDotsAll에 넣어준다.
         //코루틴 실행 종료되면 dots 찍어줄거임.
         var responses = KakaoLogin.response!!.body()!!
-        hashDate.clear()
+        tempHash.clear()
 
         for (i in responses.result) {
             rangeDate(
@@ -64,10 +64,7 @@ class MyViewModel : ViewModel() {
                 KakaoLogin.formatter.parse(i.dateEnd)
             )
         }
-        Log.e("enrollReset","dot livedata 설정 완료")
-        for(i in calendarDotsAll.value!!.iterator())
-        Log.e("enrollReset",""+i)
-
+        Log.e("enrollReset", "dot livedata 설정 완료") //새로 데이터 받아오면 이 로그 찍힘
 
     }
 
@@ -78,13 +75,15 @@ class MyViewModel : ViewModel() {
         //startday가 enddate보다 작을때 동안
         while (currentDay <= endDate) {
             //currentday를 calendarDotsAll에 추가한다
-            hashDate.add(CalendarDay(currentDay))
+            //livedata에 postvalue나 setvalue를 해줘야만 observer가 작동한다고 한다.
+            tempHash.add((CalendarDay(currentDay)))
+            _calendarDotsAll.postValue(tempHash)
             //currentday의 다음날을 다시 currentday로 초기화해주고 while문반복
             temp_day.time = currentDay
             temp_day.add(java.util.Calendar.DAY_OF_MONTH, 1) //currentday의 다음날
             currentDay = temp_day.time
         }
-        _calendarDotsAll = MutableLiveData<HashSet<CalendarDay>>(hashDate)
+
 
     }
 
