@@ -10,7 +10,7 @@ data class Schedule(
 
     companion object {
 
-        val MutablescheduleList = mutableListOf<Schedule>()
+        val MutablescheduleList = arrayListOf<Schedule>()
 
     }
 

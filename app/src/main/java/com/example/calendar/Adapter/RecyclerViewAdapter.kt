@@ -33,7 +33,6 @@ class RecyclerViewAdapter(val application: Application, val activity: Activity) 
                 start.text = data.start
                 end.text = data.end
 
-
                 val endfull = data.end
                 val dateHourSplit_e = endfull!!.split(" ")
                 val datefull_e = dateHourSplit_e[0]

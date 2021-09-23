@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.calendar.Adapter.Schedule
+import com.example.calendar.Adapter.Schedule.Companion.MutablescheduleList
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.MasterApplication
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -19,7 +20,7 @@ class MyViewModel : ViewModel() {
 
     // 내부에서 설정하는 자료형은 private 뮤터블로 & 변수명 앞에 언더바
     // 변경가능하도록 설정
-    private var _calendarDotsAll = MutableLiveData<HashSet<CalendarDay>>()
+    private val _calendarDotsAll = MutableLiveData<HashSet<CalendarDay>>()
     val tempHash = HashSet<CalendarDay>()
 
 
@@ -32,6 +33,11 @@ class MyViewModel : ViewModel() {
     private val _oneDayLivedata = MutableLiveData<ArrayList<Schedule>>()
     val oneDayLivedata: LiveData<ArrayList<Schedule>>
         get() = _oneDayLivedata
+
+
+    private val _allScheduls = MutableLiveData<ArrayList<Schedule>>()
+    val allScheduls: LiveData<ArrayList<Schedule>>
+        get() = _allScheduls
 
 
     //초기값 설정
@@ -93,6 +99,7 @@ class MyViewModel : ViewModel() {
      */
     fun updateOneDaySchedule(activity: Activity) {
         Schedule.MutablescheduleList.clear()
+        _allScheduls.value?.clear()
         _oneDayLivedata.value?.clear()
         //모든 일정을 받아와서 일정 하나하나를 shceduleList객체로 만든 다음 그 객체를 MutablescheduleList(모든스케줄이있는 mutableList)에 추가한다.
         runBlocking {
@@ -103,7 +110,6 @@ class MyViewModel : ViewModel() {
                 var responses = response.body()!!
                 //일정 하나하나를 shceduleList객체로 만든다
                 for (i in responses.result) {
-                    Log.e("delete",""+i.id.toString()+i.content)
                     val scheduleList = Schedule()
                     scheduleList.end = i.dateEnd
                     scheduleList.start = i.dateStart
@@ -123,6 +129,13 @@ class MyViewModel : ViewModel() {
             Log.e("delete", "서버에서 다시 일정 받아오기 완료-oneday")
 
         }
+        _allScheduls.postValue(MutablescheduleList)
+        try {
+            for (i in allScheduls.value!!.iterator())
+                Log.e("revise", "" + i.title)
+        }
+        catch (e: java.lang.Exception){}
+
         //MutablescheduleList을 이용해서 선택한 날짜의 일정리스트만 만든다
         getThedayFromAll()
         Log.e("delete", "선택한 날짜의 일정리스트만 만든다")

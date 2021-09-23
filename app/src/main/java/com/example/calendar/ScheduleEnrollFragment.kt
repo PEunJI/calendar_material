@@ -228,7 +228,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                                 // cal.add(java.util.Calendar.DAY_OF_MONTH, 1)
 
 
-                                input["때"] =
+                                input["dateEnd"] =
                                     "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.MONTH) + 1}-${
                                         cal.get(
                                             Calendar.DATE
