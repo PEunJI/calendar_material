@@ -3,12 +3,14 @@ package com.example.calendar
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.calendar.Adapter.LinearLayoutManagerWrapper
 import com.example.calendar.Adapter.RecyclerViewAdapter
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
@@ -43,13 +45,14 @@ class OnedaySchedulesFragment : Fragment() {
         //recyclerview 달기
         recyclerViewAdapter = RecyclerViewAdapter(requireActivity().application)
         binding.recyclerView.adapter = recyclerViewAdapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(get_context)
+        binding.recyclerView.layoutManager = LinearLayoutManagerWrapper(get_context)
 
 
         //3. 뷰모델(onedaylivedata)에 값이 변경될 때 할 행동
         //바뀐 oneDayLivedata을 Listadapter에 알려준다
         myViewModel.oneDayLivedata.observe(viewLifecycleOwner, Observer {
             recyclerViewAdapter.submitList(it)
+            Log.e("enroll&onedayRecyclerView","come")
         })
 
 

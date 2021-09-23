@@ -1,6 +1,7 @@
 package com.example.calendar
 
 import android.app.Activity
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -64,7 +65,7 @@ class MyViewModel : ViewModel() {
                 KakaoLogin.formatter.parse(i.dateEnd)
             )
         }
-        Log.e("enrollReset", "dot livedata 설정 완료") //새로 데이터 받아오면 이 로그 찍힘
+        Log.e("delete", "dots//새로 데이터 받아오면 이 로그 찍힘") //새로 데이터 받아오면 이 로그 찍힘
 
     }
 
@@ -118,12 +119,12 @@ class MyViewModel : ViewModel() {
                     Schedule.MutablescheduleList.add(scheduleList)
                 }
             }
-            Log.e("oneDayReset", "서버에서 다시 일정 받아오기 완료")
+            Log.e("delete", "서버에서 다시 일정 받아오기 완료-oneday")
 
         }
         //MutablescheduleList을 이용해서 선택한 날짜의 일정리스트만 만든다
         getThedayFromAll()
-        Log.e("oneDayReset", "선택한 날짜의 일정리스트만 만든다")
+        Log.e("delete", "선택한 날짜의 일정리스트만 만든다")
 
 //
 //        //바뀐 oneDayMutable을 Listadapter에 알려준다
@@ -133,16 +134,20 @@ class MyViewModel : ViewModel() {
     fun getThedayFromAll() {
         //선택한 날짜의 schedulelist만 따로 담은 mutablelist
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
-
-        //selectedDate(선택한날짜)가 MutablescheduleList(전체 일정)의 시작, 종료 날짜 사이에 있으면 그날의 일정리스트(oneDayMutable)에 추가한다.
+        val tempList = arrayListOf<Schedule>()
+        //selectedDate(선택한날짜)가 MutablescheduleList(전체 일정)의 시작, 종료 날짜 사이에 있으면 그날의 일정리스트(tempList)에 추가한다.
         for (i in Schedule.MutablescheduleList) {
             val start = formatter.parse(i.start)
             val end = formatter.parse(i.end)
 
             if (CalendarFragment.selctedDate.isInRange(CalendarDay(start), CalendarDay(end))) {
-                _oneDayLivedata.value!!.add(i)
+                //_oneDayLivedata.value!!.add(i)
+                tempList.add(i)
             }
         }
+        //완성된 일정리스트(tempList)를 mutablelivedata에 넣어준다.
+        _oneDayLivedata.postValue(tempList)
+
     }
 
 }

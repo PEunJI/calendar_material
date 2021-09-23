@@ -251,10 +251,10 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                         }
 
                         job.join()
-                        //등록완료하고 AlldayDots livedata바꿔줌
+                        //등록완료하고 AlldayDots livedata바꿔줌 & onedayschedule의 livedata도 바꿔줌
                         val job2 = CoroutineScope(Dispatchers.IO).async {
                             myViewModel.getAlldayDots(requireActivity())
-                            //  myViewModel.updateOneDaySchedule(requireActivity())
+                            myViewModel.updateOneDaySchedule(requireActivity())
                         }
                         job2.join()
                     }

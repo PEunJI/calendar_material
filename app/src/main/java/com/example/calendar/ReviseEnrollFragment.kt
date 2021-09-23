@@ -14,12 +14,12 @@ import androidx.lifecycle.MutableLiveData
 import com.example.calendar.Picker.ReviseDatePicker
 import com.example.calendar.Picker.ReviseTimePicker
 import com.example.calendar.databinding.FragmentReviseEnrollBinding
+import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.MasterApplication
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -233,17 +233,33 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
                     Toast.makeText(get_context, "제목은 필수입니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     //등록
-                    GlobalScope.launch {
-                        input["dateStart"] =
-                            "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                       Log.e("putcalendar",input["dateStart"].toString())
-                        input["dateEnd"] =
-                            "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
-                        Log.e("putcalendar",input["dateEnd"].toString())
-                        input["content"] =
-                            binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                        Log.e("putcalendar",input["content"].toString())
-                        (requireActivity().application as MasterApplication).service.putCalendar("$id",input)
+                    runBlocking {
+                        val job = CoroutineScope(Dispatchers.IO).async {
+                            input["dateStart"] =
+                                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                            Log.e("putcalendar", input["dateStart"].toString())
+                            input["dateEnd"] =
+                                "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+                            Log.e("putcalendar", input["dateEnd"].toString())
+                            input["content"] =
+                                binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
+                            Log.e("putcalendar", input["content"].toString())
+
+
+                            (requireActivity().application as MasterApplication).service.putCalendar(
+                                "$id",
+                                input
+                            )
+                            Log.e("reviseEnroll", "수정해서 서버에 post완료")
+
+                        }
+                        job.join()
+                        //등록완료하고 AlldayDots livedata바꿔줌 & onedayschedule의 livedata도 바꿔줌
+                        val job2 = CoroutineScope(Dispatchers.IO).async {
+                            KakaoLogin.myViewModel.getAlldayDots(requireActivity())
+                            KakaoLogin.myViewModel.updateOneDaySchedule(requireActivity())
+                        }
+                        job2.join()
                     }
                     dismiss()
                 }
@@ -253,12 +269,10 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
         return binding.root
 
 
-
     }
 
 
-
-    companion object{
+    companion object {
         var returnEndHour = MutableLiveData<Array<Long>>()
 
     }

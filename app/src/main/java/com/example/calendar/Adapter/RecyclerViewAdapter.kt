@@ -1,20 +1,28 @@
 package com.example.calendar.Adapter
 
+import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.calendar.Adapter.RecyclerViewAdapter.MyViewHolder
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.ReviseEnrollFragment
 import com.example.calendar.databinding.ScheduleListBinding
+import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.MasterApplication
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import okhttp3.Dispatcher
 
-class RecyclerViewAdapter(val application: Application) :ListAdapter<Schedule,RecyclerView.ViewHolder>(OnedayDiffCallback()) {
+class RecyclerViewAdapter(val application: Application) :
+    ListAdapter<Schedule, RecyclerView.ViewHolder>(OnedayDiffCallback()) {
 
     inner class MyViewHolder(private val binding: ScheduleListBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -83,12 +91,26 @@ class RecyclerViewAdapter(val application: Application) :ListAdapter<Schedule,Re
                     builder.setMessage("삭제하시겠습니까?")
                     builder.setPositiveButton("예") { dialog, id ->
                         //삭제
-                        val scheduleId = data.id
-                        GlobalScope.launch {
-                            (application as MasterApplication).service.deleteCalendar(
-                                "$scheduleId"
-                            )
+                        runBlocking {
+                            val scheduleId = data.id
+
+
+                            val job = CoroutineScope(Dispatchers.IO).async {
+                                (application as MasterApplication).service.deleteCalendar(
+                                    "$scheduleId"
+                                )
+                                Log.e("delete","삭제완료")
+                            }
+                            job.join()
+
+                            val job2 = CoroutineScope(Dispatchers.IO).async {
+                                KakaoLogin.myViewModel.getAlldayDots(application as Activity)
+                                KakaoLogin.myViewModel.updateOneDaySchedule(application as Activity)
+                            }
+                            job2.join()
+
                         }
+
                         ad.dismiss()
                     }
                     builder.setNegativeButton("아니오") { dialog, id ->
@@ -109,11 +131,11 @@ class RecyclerViewAdapter(val application: Application) :ListAdapter<Schedule,Re
                 false
             )
         )
-        return  viewHolder
+        return viewHolder
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(holder is MyViewHolder){
+        if (holder is MyViewHolder) {
             val schedule = getItem(position) as Schedule
             holder.bind(schedule)
 
@@ -122,6 +144,27 @@ class RecyclerViewAdapter(val application: Application) :ListAdapter<Schedule,Re
 
 }
 
+class LinearLayoutManagerWrapper : LinearLayoutManager {
+    constructor(context: Context) : super(context) {}
+    constructor(context: Context, orientation: Int, reverseLayout: Boolean) : super(
+        context,
+        orientation,
+        reverseLayout
+    ) {
+    }
+
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(
+        context,
+        attrs,
+        defStyleAttr,
+        defStyleRes
+    ) {
+    }
+
+    override fun supportsPredictiveItemAnimations(): Boolean {
+        return false
+    }
+}
 
 
 
