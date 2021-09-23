@@ -103,6 +103,7 @@ class MyViewModel : ViewModel() {
                 var responses = response.body()!!
                 //일정 하나하나를 shceduleList객체로 만든다
                 for (i in responses.result) {
+                    Log.e("delete",""+i.id.toString()+i.content)
                     val scheduleList = Schedule()
                     scheduleList.end = i.dateEnd
                     scheduleList.start = i.dateStart

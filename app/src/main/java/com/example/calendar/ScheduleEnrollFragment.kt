@@ -217,6 +217,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             if (returnEndHour.value!![0] != 24L) {
                                 input["dateEnd"] =
                                     "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
+                                Log.e("dateEnd","24시가 아닐 때 : "+input["dateEnd"].toString())
                             } else {
 
                                 val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
@@ -227,18 +228,14 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                                 // cal.add(java.util.Calendar.DAY_OF_MONTH, 1)
 
 
-                                input["dateEnd"] =
+                                input["때"] =
                                     "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.MONTH) + 1}-${
                                         cal.get(
                                             Calendar.DATE
                                         )
                                     } 00:${cal.get(Calendar.MINUTE)}"
-                                Log.e(
-                                    "calendarcheck",
-                                    "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.MONTH) + 1}-${
-                                        cal.get(Calendar.DATE)
-                                    } 00:${cal.get(Calendar.MINUTE)}"
-                                )
+                                Log.e("dateEnd","24시 일  : "+input["dateEnd"].toString())
+
 
                             }
 

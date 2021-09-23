@@ -21,7 +21,7 @@ import com.example.calendar.kakaoLogin.MasterApplication
 import kotlinx.coroutines.*
 import okhttp3.Dispatcher
 
-class RecyclerViewAdapter(val application: Application) :
+class RecyclerViewAdapter(val application: Application, val activity: Activity) :
     ListAdapter<Schedule, RecyclerView.ViewHolder>(OnedayDiffCallback()) {
 
     inner class MyViewHolder(private val binding: ScheduleListBinding) :
@@ -92,22 +92,22 @@ class RecyclerViewAdapter(val application: Application) :
                     builder.setPositiveButton("예") { dialog, id ->
                         //삭제
                         runBlocking {
-                            val scheduleId = data.id
-
-
                             val job = CoroutineScope(Dispatchers.IO).async {
+                                val scheduleId = data.id
                                 (application as MasterApplication).service.deleteCalendar(
                                     "$scheduleId"
                                 )
-                                Log.e("delete","삭제완료")
                             }
+
                             job.join()
+                            Log.e("delete", "삭제완료")
 
                             val job2 = CoroutineScope(Dispatchers.IO).async {
-                                KakaoLogin.myViewModel.getAlldayDots(application as Activity)
-                                KakaoLogin.myViewModel.updateOneDaySchedule(application as Activity)
-                            }
-                            job2.join()
+                                Log.e("delete", "job2 coming")
+
+                                KakaoLogin.myViewModel.getAlldayDots(activity)
+                                KakaoLogin.myViewModel.updateOneDaySchedule(activity)
+                            }.join()
 
                         }
 
