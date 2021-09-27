@@ -31,6 +31,14 @@ class DatePicker(
             end_liveDate.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
         }
 
+
+    val startDatePickerDialog = DatePickerDialog(
+        context,
+        startDateSetListener,
+        mYear, mMonth - 1, mDay
+    )
+
+
     val EndDateSetListener =
         DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             returnEndDate[0] = year.toLong()
@@ -39,12 +47,6 @@ class DatePicker(
             end_liveDate.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
         }
 
-
-    val startDatePickerDialog = DatePickerDialog(
-        context,
-        startDateSetListener,
-        mYear, mMonth - 1, mDay
-    )
 
     val endDatePickerDialog = DatePickerDialog(
         context,

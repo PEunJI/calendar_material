@@ -4,15 +4,17 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
+import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.ReviseDatePicker
 import com.example.calendar.Picker.ReviseTimePicker
+import com.example.calendar.ScheduleEnrollFragment.Companion.isRightRange
+import com.example.calendar.ScheduleEnrollFragment.Companion.startDToDate
 import com.example.calendar.databinding.FragmentReviseEnrollBinding
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.MasterApplication
@@ -40,10 +42,6 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
     var title: String = ""
     var id: Int? = null
 
-    val start_liveDate = MutableLiveData<String>()
-    val start_liveHour = MutableLiveData<String>()
-    val end_liveDate = MutableLiveData<String>()
-    val end_liveHour = MutableLiveData<String>()
 
     lateinit var get_context: Activity
     lateinit var binding: FragmentReviseEnrollBinding
@@ -100,14 +98,14 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_revise_enroll, container, false)
         binding.apply {
             lifecycleOwner = this@ReviseEnrollFragment
-            main = this@ReviseEnrollFragment
+            main = ReviseEnrollFragment.Companion
         }
 
         //첫세팅
-        start_liveDate.value = "${startY}년 ${startM}월 ${startD}일 "
-        start_liveHour.value = "${startH}시 ${startm}분"
-        end_liveDate.value = "${endY}년 ${endM}월 ${endD}일 "
-        end_liveHour.value = "${endH}시 ${endm}분"
+        start_liveDate_revise.value = "${startY}년 ${startM}월 ${startD}일 "
+        start_liveHour_revise.value = "${startH}시 ${startm}분"
+        end_liveDate_revise.value = "${endY}년 ${endM}월 ${endD}일 "
+        end_liveHour_revise.value = "${endH}시 ${endm}분"
         binding.txtMemo.setText(StringBuffer(memo))
         binding.txtTitle.setText(StringBuffer(title))
 
@@ -118,56 +116,35 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
 
 
         //return 변수 초기화
-        var returnStartDay = MutableLiveData<Array<Long>>()
-        var returnEndDate = MutableLiveData<Array<Long>>()
-        var returnStartHour = MutableLiveData<Array<Long>>()
 
-        returnStartDay.value = arrayOf(startY.toLong(), startM.toLong(), startD.toLong())
-        returnEndDate.value = arrayOf(endY.toLong(), endM.toLong(), endD.toLong())
-        returnStartHour.value = arrayOf(startH.toLong(), startm.toLong())
-        returnEndHour.value = arrayOf(endH.toLong(), endm.toLong())
+        returnStartDay_revise = arrayListOf(startY.toLong(), startM.toLong(), startD.toLong())
+        returnEndDate_revise = arrayListOf(endY.toLong(), endM.toLong(), endD.toLong())
+        returnStartHour_revise = arrayListOf(startH.toLong(), startm.toLong())
+        returnEndHour_revise = arrayListOf(endH.toLong(), endm.toLong())
 
 
-        //시작 날짜 피커
-        val startdate_picker =
+        //picker setting
+        val date_picker =
             ReviseDatePicker(
-                mutableLiveData = start_liveDate,
-                returnStartDay = returnStartDay,
                 context = get_context,
                 mYear = startY,
                 mMonth = startM,
-                mDay = startD,
-                mutableLiveData_end = end_liveDate
+                mDay = startD
             )
-        //종료날짜피커
-        val enddate_picker =
-            ReviseDatePicker(
-                mutableLiveData = end_liveDate,
-                returnStartDay = returnEndDate,
-                context = get_context,
-                mYear = endY,
-                mMonth = endM,
-                mDay = endD
-            )
-        //시작 시간 피커
-        val starthour_picker =
+
+        val hour_picker =
             ReviseTimePicker(
-                mutableLiveData = start_liveHour,
-                context = get_context,
-                mutableStartDate = returnStartDay,
-                mutableEndDate = returnEndDate,
-                mutableStartHour = returnStartHour
+                 get_context
             )
 
         //시작 날짜 눌렀을 때 datepicker띄우기
         binding.startDatePicker.setOnClickListener {
-            startdate_picker.datePickerDialog.show()
-
+            date_picker.startDatePickerDialog.show()
         }
 
         //시작 시간 눌렀을 때 timepicker띄우기
         binding.startTimePicker.setOnClickListener {
-            starthour_picker.timePickerDialog.apply {
+            hour_picker.startTimePickerDialog.apply {
                 this.window!!.setBackgroundDrawableResource(android.R.color.transparent)
             }.show()
 
@@ -175,35 +152,23 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
 
         //종료 날짜 눌렀을 때 datepicker띄우기
         binding.endDatePicker.setOnClickListener {
-            //종료 날짜는 시작날짜 이후로만 선택되게
-            //날짜 String->dateFormat->TimeMillis()
-            var date =
-                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-            Log.d("dateLog", "" + returnStartDay.value!![2])
-            val dateFormat = simpleDateFormat.parse(date)
-
-            enddate_picker.datePickerDialog.apply {
-                datePicker.minDate = (dateFormat.time)
+            var startDate = startDToDate(returnStartDay_revise, returnStartHour_revise)
+            val date_picker =
+                ReviseDatePicker(
+                    context = get_context,
+                    mYear = startY,
+                    mMonth = startM,
+                    mDay = startD
+                )
+            date_picker.endDatePickerDialog.apply {
+                datePicker.minDate = (startDate.time)
             }.show()
-            Log.d("dateTest", date)
-
         }
 
-        val endhour_picker = ReviseTimePicker(
-            end_liveHour,
-            get_context,
-            returnStartDay,
-            returnEndDate,
-            returnStartHour
-        )
 
-
-        //종료 시간은 시작 시간 이후로만 선택되게 하고 싶지만 커스텀해야하는 것 같다. 구찮다. 그냥 토스트를 띄우고 스타트타임+1시간으로 고정시키자
+        //종료 시간 눌렀을 때 timepicker 띄우기
         binding.endTimePicker.setOnClickListener {
-
-            endhour_picker.timePickerDialog_end.show()
-
+            hour_picker.timePickerDialog_end.show()
         }
 
         //취소버튼
@@ -217,14 +182,7 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
 
             //시간체크
             if (
-                (start_liveDate.value.toString() + start_liveHour.value.toString()).replace(
-                    ("[^\\d.]").toRegex(),
-                    ""
-                ).toLong() >
-                (end_liveDate.value.toString() + end_liveHour.value.toString()).replace(
-                    ("[^\\d.]").toRegex(),
-                    ""
-                ).toLong()
+                isRightRange(start_liveDate_revise.value!!, start_liveHour_revise.value!!, end_liveDate_revise.value!!, end_liveHour_revise.value!!)
             ) {
                 Toast.makeText(get_context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
             } else {
@@ -236,21 +194,16 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
                     runBlocking {
                         val job = CoroutineScope(Dispatchers.IO).async {
                             input["dateStart"] =
-                                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
-                            Log.e("putcalendar", input["dateStart"].toString())
+                                "${returnStartDay_revise[0]}-${returnStartDay_revise[1]}-${returnStartDay_revise[2]} ${returnStartHour_revise[0]}:${returnStartHour_revise[1]}"
                             input["dateEnd"] =
-                                "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
-                            Log.e("putcalendar", input["dateEnd"].toString())
+                                "${returnEndDate_revise[0]}-${returnEndDate_revise[1]}-${returnEndDate_revise[2]} ${returnEndHour_revise[0]}:${returnEndHour_revise[1]}"
                             input["content"] =
                                 binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
-                            Log.e("putcalendar", input["content"].toString())
-
 
                             (requireActivity().application as MasterApplication).service.putCalendar(
                                 "$id",
                                 input
                             )
-                            Log.e("reviseEnroll", "수정해서 서버에 post완료")
 
                         }
                         job.join()
@@ -273,7 +226,15 @@ class ReviseEnrollFragment : BottomSheetDialogFragment() {
 
 
     companion object {
-        var returnEndHour = MutableLiveData<Array<Long>>()
+        lateinit var returnStartDay_revise: ArrayList<Long>
+        lateinit var returnEndDate_revise: ArrayList<Long>
+        lateinit var returnStartHour_revise: ArrayList<Long>
+        lateinit var returnEndHour_revise: ArrayList<Long>
+
+        val start_liveDate_revise = MutableLiveData<String>()
+        val start_liveHour_revise = MutableLiveData<String>()
+        val end_liveDate_revise = MutableLiveData<String>()
+        val end_liveHour_revise = MutableLiveData<String>()
 
     }
 

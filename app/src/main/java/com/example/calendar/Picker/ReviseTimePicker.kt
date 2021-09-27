@@ -5,72 +5,55 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
-import com.example.calendar.ReviseEnrollFragment.Companion.returnEndHour
+import com.example.calendar.Picker.TimePicker.Companion.selectOnlyAfterStartTime
+import com.example.calendar.ReviseEnrollFragment
+import com.example.calendar.ReviseEnrollFragment.Companion.end_liveHour_revise
+import com.example.calendar.ReviseEnrollFragment.Companion.returnEndDate_revise
+import com.example.calendar.ReviseEnrollFragment.Companion.returnEndHour_revise
+import com.example.calendar.ReviseEnrollFragment.Companion.returnStartDay_revise
+import com.example.calendar.ReviseEnrollFragment.Companion.returnStartHour_revise
 
-class ReviseTimePicker (
-    var mutableLiveData: MutableLiveData<String>,
+class ReviseTimePicker(
     var context: Context,
-    var mutableStartDate: MutableLiveData<Array<Long>>,
-    var mutableEndDate: MutableLiveData<Array<Long>>,
-    var mutableStartHour: MutableLiveData<Array<Long>>
 ) {
-    val mutableEndHour = MutableLiveData<Array<Long>>()
-
 
 
     //시작시간 다이어로그
-    val timeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-        mutableLiveData.value = "${hourOfDay}시 ${minute}분"
-        mutableStartHour.value = arrayOf(hourOfDay.toLong(), minute.toLong())
+    val startTimeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+        ReviseEnrollFragment.start_liveHour_revise.value = "${hourOfDay}시 ${minute}분"
+        returnStartHour_revise[0] = hourOfDay.toLong()
+        returnStartHour_revise[1] = minute.toLong()
     }
 
-    val timePickerDialog = TimePickerDialog(
+    val startTimePickerDialog = TimePickerDialog(
         context,
         R.style.Theme_Holo_Light_Dialog_NoActionBar,
-        timeSetListener,
-        mutableStartHour.value!![0].toInt(),
-        mutableStartHour.value!![1].toInt(),
+        startTimeSetListener,
+        returnStartHour_revise[0].toInt(),
+        returnStartHour_revise[1].toInt(),
         true
     )
 
 
-    fun selectOnlyAfterStartTime() {
-
-        var startdate_full =
-            ("${mutableStartDate.value!![0]}${mutableStartDate.value!![1]}${mutableStartDate.value!![2]}").toInt()
-        var endate_full =
-            ("${mutableEndDate.value!![0]}${mutableEndDate.value!![1]}${mutableEndDate.value!![2]}").toInt()
-        var startHour_full =
-            ("${mutableStartHour.value!![0]}${mutableStartHour.value!![1]}").toInt()
-
-
-        if (startdate_full < endate_full) {
-            return
-        } else {
-            if (startHour_full > ("${mutableEndHour.value!![0]}${mutableEndHour.value!![1]}").toInt()) {
-                mutableLiveData.value =
-                    "${mutableStartHour.value!![0]+1}시 ${mutableStartHour.value!![1]}분"
-                Toast.makeText(context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-
     val timeSetListener_end = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-        mutableLiveData.value = "${hourOfDay}시 ${minute}분"
-        mutableEndHour.value = arrayOf(hourOfDay.toLong(), minute.toLong())
-        selectOnlyAfterStartTime()
-        returnEndHour.value=arrayOf(hourOfDay.toLong(), minute.toLong())
-        Log.e("timecheck",hourOfDay.toString()+minute.toString())
+        end_liveHour_revise.value = "${hourOfDay}시 ${minute}분"
+        returnEndHour_revise[0] = hourOfDay.toLong()
+        returnEndHour_revise[1] = minute.toLong()
+        selectOnlyAfterStartTime(
+            context, returnStartDay_revise, returnStartHour_revise, returnEndDate_revise,
+            returnEndHour_revise, end_liveHour_revise
+        )
     }
 
     val timePickerDialog_end = TimePickerDialog(
         context,
         R.style.Theme_Holo_Light_Dialog_NoActionBar,
         timeSetListener_end,
-        returnEndHour.value!![0].toInt(),
-        returnEndHour.value!![1].toInt(),
+        returnStartHour_revise[0].toInt(),
+        returnStartHour_revise[1].toInt(),
         true
     )
+
+
+
 }

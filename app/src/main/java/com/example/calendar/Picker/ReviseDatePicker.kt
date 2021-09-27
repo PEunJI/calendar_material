@@ -4,54 +4,52 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.calendar.ReviseEnrollFragment
+import com.example.calendar.ScheduleEnrollFragment
 
-class ReviseDatePicker (
-    mutableLiveData: MutableLiveData<String>, //글자
-    var returnStartDay: MutableLiveData<Array<Long>>, //리턴
+class ReviseDatePicker(
     context: Context,
     mYear: Int,
     mMonth: Int,
     mDay: Int
 ) {
-    var mutableLiveData_end: MutableLiveData<String>? = null
-
-    constructor(
-        mutableLiveData: MutableLiveData<String>,
-        returnStartDay: MutableLiveData<Array<Long>>,
-        context: Context,
-        mYear: Int,
-        mMonth: Int,
-        mDay: Int, mutableLiveData_end: MutableLiveData<String>?
-    ) : this(mutableLiveData, returnStartDay, context, mYear, mMonth, mDay) {
-        this.mutableLiveData_end = mutableLiveData_end
-    }
-
-    var returnYear = 0L
-    var returnMonth = 0L
-    var returnDay = 0L
-
-    val dateSetListener =
+    val startDateSetListener =
         DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-            mutableLiveData.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
-            returnYear = year.toLong()
-            returnMonth = month.toLong() + 1
-            returnDay = dayOfMonth.toLong()
-            Log.d("monthTest", "" + month + "day" + dayOfMonth)
-            Log.d("monthTest", "return" + returnMonth + returnDay)
-            returnStartDate()
-            mutableLiveData_end?.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
+            ReviseEnrollFragment.start_liveDate_revise.value =
+                "${year}년 ${month + 1}월 ${dayOfMonth}일 "
+            ReviseEnrollFragment.returnStartDay_revise[0] = year.toLong()
+            ReviseEnrollFragment.returnStartDay_revise[1] = month.toLong() + 1
+            ReviseEnrollFragment.returnStartDay_revise[2] = dayOfMonth.toLong()
+            ReviseEnrollFragment.returnEndDate_revise[0] = year.toLong()
+            ReviseEnrollFragment.returnEndDate_revise[1] = month.toLong() + 1
+            ReviseEnrollFragment.returnEndDate_revise[2] = dayOfMonth.toLong()
         }
 
 
-    fun returnStartDate() {
-        returnStartDay.value = arrayOf<Long>(returnYear, returnMonth, returnDay)
-    }
-
-    val datePickerDialog = DatePickerDialog(
+    val startDatePickerDialog = DatePickerDialog(
         context,
-        dateSetListener,
+        startDateSetListener,
         mYear, mMonth - 1, mDay
 
     )
+
+    val EndDateSetListener =
+        DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+            ReviseEnrollFragment.returnEndDate_revise[0] = year.toLong()
+            ReviseEnrollFragment.returnEndDate_revise[1] = month.toLong() + 1
+            ReviseEnrollFragment.returnEndDate_revise[2] = dayOfMonth.toLong()
+            ReviseEnrollFragment.end_liveDate_revise.value =
+                "${year}년 ${month + 1}월 ${dayOfMonth}일 "
+        }
+
+
+    val endDatePickerDialog = DatePickerDialog(
+        context,
+        EndDateSetListener,
+        ReviseEnrollFragment.returnEndDate_revise[0].toInt(),
+        ReviseEnrollFragment.returnEndDate_revise[1].toInt() - 1,
+        ReviseEnrollFragment.returnEndDate_revise[2].toInt()
+    )
+
 
 }

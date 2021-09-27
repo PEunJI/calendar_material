@@ -7,6 +7,12 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.R
 import com.example.calendar.ScheduleEnrollFragment
+import com.example.calendar.ScheduleEnrollFragment.Companion.end_liveHour
+import com.example.calendar.ScheduleEnrollFragment.Companion.returnEndDate
+import com.example.calendar.ScheduleEnrollFragment.Companion.returnEndHour
+import com.example.calendar.ScheduleEnrollFragment.Companion.returnStartDay
+import com.example.calendar.ScheduleEnrollFragment.Companion.returnStartHour
+import com.example.calendar.ScheduleEnrollFragment.Companion.start_liveHour
 
 class TimePicker(
     var context: Context,
@@ -16,9 +22,9 @@ class TimePicker(
 
     //시작시간 다이어로그
     val startTimeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-        ScheduleEnrollFragment.start_liveHour.value = "${hourOfDay}시 ${minute}분"
-        ScheduleEnrollFragment.returnStartHour[0] = hourOfDay.toLong()
-        ScheduleEnrollFragment.returnStartHour[1] = minute.toLong()
+        start_liveHour.value = "${hourOfDay}시 ${minute}분"
+        returnStartHour[0] = hourOfDay.toLong()
+        returnStartHour[1] = minute.toLong()
     }
 
     val startTimePickerDialog = TimePickerDialog(
@@ -32,10 +38,13 @@ class TimePicker(
 
 
     val timeSetListener_end = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-        ScheduleEnrollFragment.end_liveHour.value = "${hourOfDay}시 ${minute}분"
-        ScheduleEnrollFragment.returnEndHour[0] = hourOfDay.toLong()
-        ScheduleEnrollFragment.returnEndHour[1] = minute.toLong()
-        selectOnlyAfterStartTime()
+        end_liveHour.value = "${hourOfDay}시 ${minute}분"
+        returnEndHour[0] = hourOfDay.toLong()
+        returnEndHour[1] = minute.toLong()
+        selectOnlyAfterStartTime(
+            context, returnStartDay, returnStartHour, returnEndDate,
+            returnEndHour, end_liveHour
+        )
     }
 
     val timePickerDialog_end = TimePickerDialog(
@@ -47,23 +56,34 @@ class TimePicker(
         true
     )
 
-    fun selectOnlyAfterStartTime() {
+    companion object {
+        fun selectOnlyAfterStartTime(
+            context: Context,
+            startD: ArrayList<Long>,
+            startH: ArrayList<Long>,
+            endD: ArrayList<Long>,
+            endH: ArrayList<Long>,
+            endLiveHourData: MutableLiveData<String>
+        ) {
 
-        var startdate_full =
-            ("${ScheduleEnrollFragment.returnStartDay[0]}${ScheduleEnrollFragment.returnStartDay[1]}${ScheduleEnrollFragment.returnStartDay[2]}").toInt()
-        var endate_full =
-            ("${ScheduleEnrollFragment.returnEndDate[0]}${ScheduleEnrollFragment.returnEndDate[1]}${ScheduleEnrollFragment.returnEndDate[2]}").toInt()
-        var startHour_full =
-            ("${ScheduleEnrollFragment.returnStartHour[0]}${ScheduleEnrollFragment.returnStartHour[1]}").toInt()
+            var startdate_full =
+                ("${startD[0]}${startD[1]}${startD[2]}").toInt()
+            var endate_full =
+                ("${endD[0]}${endD[1]}${endD[2]}").toInt()
+            var startHour_full =
+                ("${startH[0]}${startH[1]}").toInt()
 
-        if (startdate_full < endate_full) {
-            return
-        } else {
-            if (startHour_full > ("${ScheduleEnrollFragment.returnEndHour[0]}${ScheduleEnrollFragment.returnEndHour[1]}").toInt()) {
-                 val temp =      "${ScheduleEnrollFragment.returnStartHour[0] + 1}시 ${ScheduleEnrollFragment.returnStartHour[1]}분"
-                ScheduleEnrollFragment.end_liveHour.value = temp
-                Toast.makeText(context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
+            if (startdate_full < endate_full) {
+                return
+            } else {
+                if (startHour_full > ("${endH[0]}${endH[1]}").toInt()) {
+                    val temp = "${startH[0] + 1}시 ${startH[1]}분"
+                    endLiveHourData.value = temp
+                    Toast.makeText(context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
+
 }
+

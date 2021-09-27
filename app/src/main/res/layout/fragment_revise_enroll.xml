@@ -5,7 +5,7 @@
 
         <variable
             name="main"
-            type="com.example.calendar.ReviseEnrollFragment" />
+            type="com.example.calendar.ReviseEnrollFragment.Companion" />
 
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -108,14 +108,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:gravity="center_vertical|right"
-                android:text="@{main.start_liveDate}" />
+                android:text="@{main.start_liveDate_revise}" />
             <TextView
                 android:id="@+id/start_time_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:gravity="center_vertical|right"
                 android:paddingRight="10dp"
-                android:text="@{main.start_liveHour}" />
+                android:text="@{main.start_liveHour_revise}" />
 
         </LinearLayout>
 
@@ -140,14 +140,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:gravity="center_vertical|right"
-                android:text="@{main.end_liveDate}" />
+                android:text="@{main.end_liveDate_revise}" />
             <TextView
                 android:id="@+id/end_time_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:gravity="center_vertical|right"
                 android:paddingRight="10dp"
-                android:text="@{main.end_liveHour}" />
+                android:text="@{main.end_liveHour_revise}" />
         </LinearLayout>
 
 

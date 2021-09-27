@@ -19,7 +19,6 @@ import com.example.calendar.kakaoLogin.MasterApplication
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -115,7 +114,6 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
             )
 
 
-
         //시작 날짜 눌렀을 때 datepicker띄우기
         binding.startDatePicker.setOnClickListener {
             date_picker.startDatePickerDialog.show()
@@ -132,16 +130,17 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
         //종료 날짜 눌렀을 때 datepicker띄우기
         binding.endDatePicker.setOnClickListener {
-            //종료 날짜는 시작날짜 이후로만 선택되게
-            //날짜 String->dateFormat->TimeMillis()
-            var date =
-                "${returnStartDay[0]}-${returnStartDay[1]}-${returnStartDay[2]} ${returnStartHour[0]}:${returnStartHour[1]}"
-            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-            val dateFormat = simpleDateFormat.parse(date)
+            var startDate = startDToDate(returnStartDay, returnStartHour)
+            val date_picker =
+                DatePicker(
+                    get_context,
+                    mYear,
+                    mMonth,
+                    mDay
+                )
             date_picker.endDatePickerDialog.apply {
-                datePicker.minDate = (dateFormat.time)
+                datePicker.minDate = (startDate.time)
             }.show()
-
         }
 
 
@@ -163,14 +162,12 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
             //시간체크
             if (
-                (start_liveDate.value.toString() + start_liveHour.value.toString()).replace(
-                    ("[^\\d.]").toRegex(),
-                    ""
-                ).toLong() >
-                (end_liveDate.value.toString() + end_liveHour.value.toString()).replace(
-                    ("[^\\d.]").toRegex(),
-                    ""
-                ).toLong()
+                isRightRange(
+                    start_liveDate.value!!,
+                    start_liveHour.value!!,
+                    end_liveDate.value!!,
+                    end_liveHour.value!!
+                )
             ) {
                 Toast.makeText(get_context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
             } else {
@@ -179,7 +176,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                     Toast.makeText(get_context, "제목은 필수입니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     //등록
-                    enrollCoroutine = runBlocking {
+                    runBlocking {
 
                         val job = CoroutineScope(Dispatchers.IO).async {
                             input["dateStart"] =
@@ -189,7 +186,6 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             if (returnEndHour[0] != 24L) {
                                 input["dateEnd"] =
                                     "${returnEndDate[0]}-${returnEndDate[1]}-${returnEndDate[2]} ${returnEndHour[0]}:${returnEndHour[1]}"
-                                Log.e("dateEnd", "24시가 아닐 때 : " + input["dateEnd"].toString())
                             } else {
 
                                 val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
@@ -206,11 +202,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                                             Calendar.DATE
                                         )
                                     } 00:${cal.get(Calendar.MINUTE)}"
-                                Log.e("dateEnd", "24시 일  : " + input["dateEnd"].toString())
-
-
                             }
-
 
                             input["content"] =
                                 binding.txtTitle.text.toString() + "@^" + binding.txtMemo.text?.toString()
@@ -219,10 +211,6 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                             )
                         }
 
-                        Log.e(
-                            "endDate",
-                            returnStartDay[1].toString() + returnStartDay[2].toString()
-                        )
 
 
                         job.join()
@@ -243,7 +231,6 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        var enrollCoroutine: Unit? = null
 
         //return 변수 초기화
         lateinit var returnStartDay: ArrayList<Long>
@@ -256,6 +243,33 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         val end_liveDate = MutableLiveData<String>()
         val end_liveHour = MutableLiveData<String>()
 
+
+        fun isRightRange(startD: String, startH: String, endD: String, endH: String): Boolean {
+
+            val start = (startD + startH).replace(
+                ("[^\\d.]").toRegex(),
+                ""
+            ).toLong()
+
+            val end = (endD + endH).replace(
+                ("[^\\d.]").toRegex(),
+                ""
+            ).toLong()
+
+            val boolean = start > end
+
+            return boolean
+        }
+
+        fun startDToDate(startD: ArrayList<Long>, startH: ArrayList<Long>): Date {
+            //종료 날짜는 시작날짜 이후로만 선택되게
+            //날짜 String->dateFormat->TimeMillis()
+            var date =
+                "${startD[0]}-${startD[1]}-${startD[2]} ${startH[0]}:${startH[1]}"
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            return simpleDateFormat.parse(date)
+
+        }
     }
 
 }
