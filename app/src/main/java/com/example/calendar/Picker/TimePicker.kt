@@ -6,63 +6,35 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.calendar.R
+import com.example.calendar.ScheduleEnrollFragment
 
 class TimePicker(
-    var mutableLiveData: MutableLiveData<String>,
     var context: Context,
-    var mutableStartDate: MutableLiveData<Array<Long>>,
-    var mutableEndDate: MutableLiveData<Array<Long>>,
-    var mutableStartHour: MutableLiveData<Array<Long>>
+    var hour: Int,
+    var minute: Int
 ) {
-    val mutableEndHour = MutableLiveData<Array<Long>>()
-
-
-//    init {
-//        mutableEndHour.value = arrayOf(mutableStartHour.value!![0]+1, mutableStartHour.value!![1])
-//    } //endhour = endhour +1 시간으로 초기화
-
 
     //시작시간 다이어로그
-    val timeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-        mutableLiveData.value = "${hourOfDay}시 ${minute}분"
-        mutableStartHour.value = arrayOf(hourOfDay.toLong(), minute.toLong())
+    val startTimeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+        ScheduleEnrollFragment.start_liveHour.value = "${hourOfDay}시 ${minute}분"
+        ScheduleEnrollFragment.returnStartHour[0] = hourOfDay.toLong()
+        ScheduleEnrollFragment.returnStartHour[1] = minute.toLong()
     }
 
-    val timePickerDialog = TimePickerDialog(
+    val startTimePickerDialog = TimePickerDialog(
         context,
         android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-        timeSetListener,
-        mutableStartHour.value!![0].toInt(),
-        mutableStartHour.value!![1].toInt(),
+        startTimeSetListener,
+        hour,
+        minute,
         true
     )
 
 
-    fun selectOnlyAfterStartTime() {
-
-        var startdate_full =
-            ("${mutableStartDate.value!![0]}${mutableStartDate.value!![1]}${mutableStartDate.value!![2]}").toInt()
-        var endate_full =
-            ("${mutableEndDate.value!![0]}${mutableEndDate.value!![1]}${mutableEndDate.value!![2]}").toInt()
-        var startHour_full =
-            ("${mutableStartHour.value!![0]}${mutableStartHour.value!![1]}").toInt()
-
-
-        if (startdate_full < endate_full) {
-            return
-        } else {
-            if (startHour_full > ("${mutableEndHour.value!![0]}${mutableEndHour.value!![1]}").toInt()) {
-                mutableLiveData.value =
-                    "${mutableStartHour.value!![0]+1}시 ${mutableStartHour.value!![1]}분"
-                Toast.makeText(context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-
     val timeSetListener_end = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-        mutableLiveData.value = "${hourOfDay}시 ${minute}분"
-        mutableEndHour.value = arrayOf(hourOfDay.toLong(), minute.toLong())
+        ScheduleEnrollFragment.end_liveHour.value = "${hourOfDay}시 ${minute}분"
+        ScheduleEnrollFragment.returnEndHour[0] = hourOfDay.toLong()
+        ScheduleEnrollFragment.returnEndHour[1] = minute.toLong()
         selectOnlyAfterStartTime()
     }
 
@@ -70,8 +42,28 @@ class TimePicker(
         context,
         android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
         timeSetListener_end,
-        mutableStartHour.value!![0].toInt() + 1,
-        mutableStartHour.value!![1].toInt(),
+        ScheduleEnrollFragment.returnStartHour[0].toInt() + 1,
+        ScheduleEnrollFragment.returnStartHour[1].toInt(),
         true
     )
+
+    fun selectOnlyAfterStartTime() {
+
+        var startdate_full =
+            ("${ScheduleEnrollFragment.returnStartDay[0]}${ScheduleEnrollFragment.returnStartDay[1]}${ScheduleEnrollFragment.returnStartDay[2]}").toInt()
+        var endate_full =
+            ("${ScheduleEnrollFragment.returnEndDate[0]}${ScheduleEnrollFragment.returnEndDate[1]}${ScheduleEnrollFragment.returnEndDate[2]}").toInt()
+        var startHour_full =
+            ("${ScheduleEnrollFragment.returnStartHour[0]}${ScheduleEnrollFragment.returnStartHour[1]}").toInt()
+
+        if (startdate_full < endate_full) {
+            return
+        } else {
+            if (startHour_full > ("${ScheduleEnrollFragment.returnEndHour[0]}${ScheduleEnrollFragment.returnEndHour[1]}").toInt()) {
+                 val temp =      "${ScheduleEnrollFragment.returnStartHour[0] + 1}시 ${ScheduleEnrollFragment.returnStartHour[1]}분"
+                ScheduleEnrollFragment.end_liveHour.value = temp
+                Toast.makeText(context, "시작시간은 종료시간 전이여야 합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }

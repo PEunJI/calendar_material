@@ -4,54 +4,52 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.calendar.ScheduleEnrollFragment
+import com.example.calendar.ScheduleEnrollFragment.Companion.end_liveDate
+import com.example.calendar.ScheduleEnrollFragment.Companion.returnEndDate
+import com.example.calendar.ScheduleEnrollFragment.Companion.returnStartDay
+import com.example.calendar.ScheduleEnrollFragment.Companion.start_liveDate
 
 class DatePicker(
-    mutableLiveData: MutableLiveData<String>,
-    var returnStartDay: MutableLiveData<Array<Long>>,
-    context: Context,
-    mYear: Int,
-    mMonth: Int,
-    mDay: Int
+
+    val context: Context,
+    val mYear: Int,
+    val mMonth: Int,
+    val mDay: Int
 ) {
-    var mutableLiveData_end: MutableLiveData<String>? = null
 
-    constructor(
-        mutableLiveData: MutableLiveData<String>,
-        returnStartDay: MutableLiveData<Array<Long>>,
-        context: Context,
-        mYear: Int,
-        mMonth: Int,
-        mDay: Int, mutableLiveData_end: MutableLiveData<String>?
-    ) : this(mutableLiveData, returnStartDay, context, mYear, mMonth, mDay) {
-        this.mutableLiveData_end = mutableLiveData_end
-    }
 
-    var returnYear = 0L
-    var returnMonth = 0L
-    var returnDay = 0L
-
-    val dateSetListener =
+    val startDateSetListener =
         DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-            mutableLiveData.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
-            returnYear = year.toLong()
-            returnMonth = month.toLong() + 1
-            returnDay = dayOfMonth.toLong()
-            Log.d("monthTest", "" + month + "day" + dayOfMonth)
-            Log.d("monthTest", "return" + returnMonth + returnDay)
-            returnStartDate()
-            mutableLiveData_end?.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
+            start_liveDate.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
+            returnStartDay[0] = year.toLong()
+            returnStartDay[1] = month.toLong() + 1
+            returnStartDay[2] = dayOfMonth.toLong()
+            returnEndDate[0] = year.toLong()
+            returnEndDate[1] = month.toLong() + 1
+            returnEndDate[2] = dayOfMonth.toLong()
+            end_liveDate.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
+        }
+
+    val EndDateSetListener =
+        DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+            returnEndDate[0] = year.toLong()
+            returnEndDate[1] = month.toLong() + 1
+            returnEndDate[2] = dayOfMonth.toLong()
+            end_liveDate.value = "${year}년 ${month + 1}월 ${dayOfMonth}일 "
         }
 
 
-    fun returnStartDate() {
-        returnStartDay.value = arrayOf<Long>(returnYear, returnMonth, returnDay)
-    }
-
-    val datePickerDialog = DatePickerDialog(
+    val startDatePickerDialog = DatePickerDialog(
         context,
-        dateSetListener,
+        startDateSetListener,
         mYear, mMonth - 1, mDay
+    )
 
+    val endDatePickerDialog = DatePickerDialog(
+        context,
+        EndDateSetListener,
+        returnStartDay[0].toInt(), returnStartDay[1].toInt()-1, returnStartDay[2].toInt()
     )
 
 }

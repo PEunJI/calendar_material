@@ -5,7 +5,7 @@
 
         <variable
             name="main"
-            type="com.example.calendar.ScheduleEnrollFragment" />
+            type="com.example.calendar.ScheduleEnrollFragment.Companion" />
 
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

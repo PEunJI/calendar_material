@@ -23,6 +23,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ScheduleEnrollFragment : BottomSheetDialogFragment() {
@@ -35,10 +36,6 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
     val mHour: Int = c.get(Calendar.HOUR_OF_DAY)
     val mMinute: Int = c.get(Calendar.MINUTE)
 
-    val start_liveDate = MutableLiveData<String>()
-    val start_liveHour = MutableLiveData<String>()
-    val end_liveDate = MutableLiveData<String>()
-    val end_liveHour = MutableLiveData<String>()
 
     lateinit var get_context: Activity
     lateinit var binding: FragmentScheduleEnrollBinding
@@ -80,17 +77,20 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_schedule_enroll, container, false)
         binding.apply {
             lifecycleOwner = this@ScheduleEnrollFragment
-            main = this@ScheduleEnrollFragment
+            main = ScheduleEnrollFragment.Companion
         }
 
         //첫세팅 (누른날짜~누시간+1시간)
-
-
         start_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
         start_liveHour.value = "${mHour}시 ${mMinute}분"
         end_liveDate.value = "${mYear}년 ${mMonth}월 ${mDay}일 "
         end_liveHour.value = "${mHour + 1}시 ${mMinute}분"
         Log.d("dateTest2", "${mMonth}월")
+
+        returnStartDay = arrayListOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
+        returnEndDate = arrayListOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
+        returnStartHour = arrayListOf(mHour.toLong(), mMinute.toLong())
+        returnEndHour = arrayListOf(mHour.toLong() + 1, mMinute.toLong())
 
 
         //cancle button
@@ -98,50 +98,33 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
             dismiss()
         }
 
-
-        //return 변수 초기화
-        var returnStartDay = MutableLiveData<Array<Long>>()
-        var returnEndDate = MutableLiveData<Array<Long>>()
-        var returnStartHour = MutableLiveData<Array<Long>>()
-        var returnEndHour = MutableLiveData<Array<Long>>()
-
-        returnStartDay.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
-        returnEndDate.value = arrayOf(mYear.toLong(), mMonth.toLong(), mDay.toLong())
-        returnStartHour.value = arrayOf(mHour.toLong(), mMinute.toLong())
-        returnEndHour.value = arrayOf(mHour.toLong() + 1, mMinute.toLong())
-
-
-        val startdate_picker =
+        //picekr setting
+        val date_picker =
             DatePicker(
-                start_liveDate,
-                returnStartDay,
-                get_context,
-                mYear,
-                mMonth,
-                mDay,
-                end_liveDate
-            )
-        val enddate_picker =
-            DatePicker(
-                end_liveDate,
-                returnEndDate,
                 get_context,
                 mYear,
                 mMonth,
                 mDay
             )
-        val starthour_picker =
-            TimePicker(start_liveHour, get_context, returnStartDay, returnEndDate, returnStartHour)
+
+        val hour_picker =
+            TimePicker(
+                get_context,
+                mHour,
+                mMinute
+            )
+
+
 
         //시작 날짜 눌렀을 때 datepicker띄우기
         binding.startDatePicker.setOnClickListener {
-            startdate_picker.datePickerDialog.show()
+            date_picker.startDatePickerDialog.show()
 
         }
 
         //시작 시간 눌렀을 때 timepicker띄우기
         binding.startTimePicker.setOnClickListener {
-            starthour_picker.timePickerDialog.apply {
+            hour_picker.startTimePickerDialog.apply {
                 this.window!!.setBackgroundDrawableResource(android.R.color.transparent)
             }.show()
 
@@ -152,31 +135,20 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
             //종료 날짜는 시작날짜 이후로만 선택되게
             //날짜 String->dateFormat->TimeMillis()
             var date =
-                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                "${returnStartDay[0]}-${returnStartDay[1]}-${returnStartDay[2]} ${returnStartHour[0]}:${returnStartHour[1]}"
             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-            Log.d("dateLog", "" + returnStartDay.value!![2])
             val dateFormat = simpleDateFormat.parse(date)
-
-            enddate_picker.datePickerDialog.apply {
+            date_picker.endDatePickerDialog.apply {
                 datePicker.minDate = (dateFormat.time)
             }.show()
-            Log.d("dateTest", date)
 
         }
-
-        val endhour_picker = TimePicker(
-            end_liveHour,
-            get_context,
-            returnStartDay,
-            returnEndDate,
-            returnStartHour
-        )
 
 
         //종료 시간은 시작 시간 이후로만 선택되게 하고 싶지만 커스텀해야하는 것 같다. 구찮다. 그냥 토스트를 띄우고 스타트타임+1시간으로 고정시키자
         binding.endTimePicker.setOnClickListener {
 
-            endhour_picker.timePickerDialog_end.show()
+            hour_picker.timePickerDialog_end.show()
 
         }
 
@@ -211,18 +183,18 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
                         val job = CoroutineScope(Dispatchers.IO).async {
                             input["dateStart"] =
-                                "${returnStartDay.value!![0]}-${returnStartDay.value!![1]}-${returnStartDay.value!![2]} ${returnStartHour.value!![0]}:${returnStartHour.value!![1]}"
+                                "${returnStartDay[0]}-${returnStartDay[1]}-${returnStartDay[2]} ${returnStartHour[0]}:${returnStartHour[1]}"
 
                             //23시에 등록하면 다음날 24시로 등록되서 오류나는 부분 해결 (다음날 00시로 명시)
-                            if (returnEndHour.value!![0] != 24L) {
+                            if (returnEndHour[0] != 24L) {
                                 input["dateEnd"] =
-                                    "${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}"
-                                Log.e("dateEnd","24시가 아닐 때 : "+input["dateEnd"].toString())
+                                    "${returnEndDate[0]}-${returnEndDate[1]}-${returnEndDate[2]} ${returnEndHour[0]}:${returnEndHour[1]}"
+                                Log.e("dateEnd", "24시가 아닐 때 : " + input["dateEnd"].toString())
                             } else {
 
                                 val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
                                 val next_date =
-                                    formatter.parse("${returnEndDate.value!![0]}-${returnEndDate.value!![1]}-${returnEndDate.value!![2]} ${returnEndHour.value!![0]}:${returnEndHour.value!![1]}")
+                                    formatter.parse("${returnEndDate[0]}-${returnEndDate[1]}-${returnEndDate[2]} ${returnEndHour[0]}:${returnEndHour[1]}")
                                 val cal = Calendar.getInstance()
                                 cal.time = next_date
                                 // cal.add(java.util.Calendar.DAY_OF_MONTH, 1)
@@ -234,7 +206,7 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                                             Calendar.DATE
                                         )
                                     } 00:${cal.get(Calendar.MINUTE)}"
-                                Log.e("dateEnd","24시 일  : "+input["dateEnd"].toString())
+                                Log.e("dateEnd", "24시 일  : " + input["dateEnd"].toString())
 
 
                             }
@@ -246,6 +218,12 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
                                 input
                             )
                         }
+
+                        Log.e(
+                            "endDate",
+                            returnStartDay[1].toString() + returnStartDay[2].toString()
+                        )
+
 
                         job.join()
                         //등록완료하고 AlldayDots livedata바꿔줌 & onedayschedule의 livedata도 바꿔줌
@@ -266,6 +244,18 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
 
     companion object {
         var enrollCoroutine: Unit? = null
+
+        //return 변수 초기화
+        lateinit var returnStartDay: ArrayList<Long>
+        lateinit var returnEndDate: ArrayList<Long>
+        lateinit var returnStartHour: ArrayList<Long>
+        lateinit var returnEndHour: ArrayList<Long>
+
+        val start_liveDate = MutableLiveData<String>()
+        val start_liveHour = MutableLiveData<String>()
+        val end_liveDate = MutableLiveData<String>()
+        val end_liveHour = MutableLiveData<String>()
+
     }
 
 }
