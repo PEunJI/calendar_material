@@ -8,14 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.ColoredDate.*
 import com.example.calendar.databinding.CalendarFragBinding
-import com.example.calendar.kakaoLogin.KakaoLogin
+import com.example.calendar.kakaoLogin.KakaoLogin.Companion.holidayDateList
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
 import com.prolificinteractive.materialcalendarview.CalendarDay
 
@@ -50,8 +47,10 @@ class CalendarFragment : Fragment() {
             SundayDecorator(),
             SaturdayDecorator(),
             TodayDecorator(get_context),
-            AlldayDecorator()
+            AlldayDecorator(),
+            HolidayDecorator(holidayDateList)
         )
+
 
         //캘린더뷰의 날짜가 선택되면 그날의 일정을 보여주는 프래그먼트로 이동
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -62,6 +61,8 @@ class CalendarFragment : Fragment() {
                 "schedules"
             )
         }
+
+
 
         return view
 

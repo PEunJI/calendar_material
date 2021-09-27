@@ -9,18 +9,22 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.calendar.BaseActivity.BaseActivity
+import com.example.calendar.Dots.GetHolidays
+import com.example.calendar.Dots.GetHolidays.Companion.holidaysList
 import com.example.calendar.Model.Calendar
 import com.example.calendar.MyViewModel
 import com.example.calendar.R
 import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
 import retrofit2.Response
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class KakaoLogin : AppCompatActivity() {
     private lateinit var binding: ActivityKakaoLoginBinding
@@ -110,7 +114,22 @@ class KakaoLogin : AppCompatActivity() {
                     checkTokenJob.join()
                     myViewModel.getAlldayDots(this@KakaoLogin)
 
+                    //공휴일 받아오기
+                    CoroutineScope(Dispatchers.IO).async {
+                        GetHolidays().getHolidays()
+
+                    }.await()
+
+                    //decorator에 쓸 holidayDateList 만들기
+                    for (i in holidaysList) {
+                        var holidayDate = i.locdate.toString()
+                        var year = holidayDate.substring(0,4).toInt()
+                        var month = holidayDate.substring(4,6).toInt()-1
+                        var day = holidayDate.substring(6).toInt()
+                        holidayDateList.add(CalendarDay.from(year,month, day))
+                    }
                 }
+
 
                 startMainActivity(
                     user.kakaoAccount!!.profile!!.thumbnailImageUrl!!,
@@ -144,6 +163,9 @@ class KakaoLogin : AppCompatActivity() {
 
         //   val calendarDotsAll =MutableLiveData<HashSet<CalendarDay>>()
         lateinit var myViewModel: MyViewModel
+
+        var holidayDateList = ArrayList<CalendarDay>()
+
     }
 }
 
