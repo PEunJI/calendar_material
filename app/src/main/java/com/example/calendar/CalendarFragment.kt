@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.ColoredDate.*
+import com.example.calendar.Dots.GetHolidays.Companion.holidaysList
 import com.example.calendar.databinding.CalendarFragBinding
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.holidayDateList
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
@@ -55,10 +56,23 @@ class CalendarFragment : Fragment() {
         //캘린더뷰의 날짜가 선택되면 그날의 일정을 보여주는 프래그먼트로 이동
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
             selctedDate = date
+            val bundle = Bundle()
+
+            //만약 선택된 날이 공휴일이면 공휴일이름을 onedayscheduleFragment에 보낸다.
+            for (i in holidaysList) {
+                var holidayDate = i.locdate.toString()
+                var year = holidayDate.substring(0, 4).toInt()
+                var month = holidayDate.substring(4, 6).toInt() - 1
+                var day = holidayDate.substring(6).toInt()
+                if (selctedDate == CalendarDay(year, month, day)) {
+                    bundle.putString("holidayTitle", "(${i.dateName})")
+                }
+            }
 
             (activity as BaseActivity).replaceFragment(
                 OnedaySchedulesFragment.newInstance(),
-                "schedules"
+                "schedules",
+                bundle
             )
         }
 

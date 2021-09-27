@@ -199,6 +199,14 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    fun replaceFragment(fragment: Fragment, tag: String,bundle: Bundle) {
+        BaseActivity.fragmentManager = supportFragmentManager
+        fragment.arguments=bundle
+        val fragmentTransaction = BaseActivity.fragmentManager!!.beginTransaction()
+        fragmentTransaction.replace(R.id.frame, fragment, tag).addToBackStack(null).commit()
+
+    }
+
     //현재 프래그먼트
     fun getFragment(tag: String): Fragment? {
         val fragment = supportFragmentManager.findFragmentByTag(tag)

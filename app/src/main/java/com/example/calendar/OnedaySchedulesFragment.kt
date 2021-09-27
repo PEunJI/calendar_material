@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calendar.Adapter.LinearLayoutManagerWrapper
 import com.example.calendar.Adapter.RecyclerViewAdapter
 import com.example.calendar.Adapter.Schedule
+import com.example.calendar.Dots.GetHolidays
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
 
@@ -35,9 +36,18 @@ class OnedaySchedulesFragment : Fragment() {
     ): View? {
         binding = ActivityOnedaySchedulesBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        //calednarFragment에서 보낸 데이터 받
+        var holidayTitle :String? = ""
+        if (arguments != null) {
+            holidayTitle = arguments?.getString("holidayTitle","")
+        }
         //제목(클릭한 날짜)달기
         binding.txtSelectedDate.text =
-            "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일"
+            "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일 " +"${holidayTitle}"
+
+
+
 
         myViewModel.updateOneDaySchedule(requireActivity())
 
@@ -62,7 +72,6 @@ class OnedaySchedulesFragment : Fragment() {
                 //하나 남은 아이템을 삭제 하는 것이므로
                 //항상 맨 첫번째 아이템이 삭제됨 . position에 0을 넣어준다.
             } else recyclerViewAdapter.submitList(it)
-
 
 
         })

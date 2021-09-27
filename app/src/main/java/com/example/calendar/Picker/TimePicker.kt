@@ -2,10 +2,8 @@ package com.example.calendar.Picker
 
 import android.app.TimePickerDialog
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
-import com.example.calendar.R
 import com.example.calendar.ScheduleEnrollFragment
 import com.example.calendar.ScheduleEnrollFragment.Companion.end_liveHour
 import com.example.calendar.ScheduleEnrollFragment.Companion.returnEndDate
