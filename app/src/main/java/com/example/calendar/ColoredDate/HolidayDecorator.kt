@@ -9,7 +9,7 @@ import kotlin.collections.ArrayList
 
 class HolidayDecorator(var holidays: ArrayList<CalendarDay>) : DayViewDecorator {
     override fun shouldDecorate(day: CalendarDay): Boolean {
-     return holidays.contains(day)
+        return holidays.contains(day)
     }
 
     override fun decorate(view: DayViewFacade?) {
