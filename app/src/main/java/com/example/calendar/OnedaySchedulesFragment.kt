@@ -3,19 +3,22 @@ package com.example.calendar
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.calendar.Adapter.LinearLayoutManagerWrapper
 import com.example.calendar.Adapter.RecyclerViewAdapter
-import com.example.calendar.Adapter.Schedule
-import com.example.calendar.Dots.GetHolidays
+import com.example.calendar.CalendarFragment.Companion.selctedDate
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import java.text.SimpleDateFormat
+import java.util.*
 
 class OnedaySchedulesFragment : Fragment() {
     private lateinit var binding: ActivityOnedaySchedulesBinding
@@ -27,6 +30,9 @@ class OnedaySchedulesFragment : Fragment() {
         if (context is Activity) {
             get_context = context
         }
+
+
+
     }
 
     override fun onCreateView(
@@ -37,14 +43,17 @@ class OnedaySchedulesFragment : Fragment() {
         binding = ActivityOnedaySchedulesBinding.inflate(inflater, container, false)
         val view = binding.root
 
+
+
+
         //calednarFragment에서 보낸 데이터 받기 
-        var holidayTitle :String? = ""
+        var holidayTitle: String? = ""
         if (arguments != null) {
-            holidayTitle = arguments?.getString("holidayTitle","")
+            holidayTitle = arguments?.getString("holidayTitle", "")
         }
         //제목(클릭한 날짜)달기
         binding.txtSelectedDate.text =
-            "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일 " +"${holidayTitle}"
+            "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일 " + "${holidayTitle}"
 
 
 

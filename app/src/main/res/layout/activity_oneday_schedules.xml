@@ -7,6 +7,7 @@
     android:layout_gravity="center"
     tools:context=".OnedaySchedulesFragment"
     android:orientation="vertical">
+
     <TextView
         android:gravity="center"
         android:textColor="#FFEB3B"
@@ -20,5 +21,4 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/recyclerView"/>
-
 </LinearLayout>

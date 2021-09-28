@@ -129,6 +129,8 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val bottomSheet = ScheduleEnrollFragment()
 
 
+
+
     //커스텀 툴바 메뉴 눌렀을 때
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -163,7 +165,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }.show(supportFragmentManager, bottomSheet.tag)
                 }
                 //onedayshcedulefragment면, 그날 날짜로 bottomfragment 띄우
-                else {
+                else if (getFragment("schedules") is OnedaySchedulesFragment){
                     val bottomSheet = ScheduleEnrollFragment()
                     bottomSheet.apply {
                         arguments = Bundle().apply {

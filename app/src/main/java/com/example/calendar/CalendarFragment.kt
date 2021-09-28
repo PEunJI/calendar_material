@@ -8,8 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.calendar.BaseActivity.BaseActivity
+import com.example.calendar.CalendarFragment.Companion.selctedDate
 import com.example.calendar.ColoredDate.*
 import com.example.calendar.Dots.GetHolidays.Companion.holidaysList
 import com.example.calendar.databinding.CalendarFragBinding
@@ -69,11 +72,17 @@ class CalendarFragment : Fragment() {
                 }
             }
 
+//            (activity as BaseActivity).replaceFragment(
+//                OnedaySchedulesFragment.newInstance(),
+//                "schedules",
+//                bundle
+//            )
+
             (activity as BaseActivity).replaceFragment(
-                OnedaySchedulesFragment.newInstance(),
-                "schedules",
-                bundle
+                ViewpagerFragment(),
+                "scheduless"
             )
+
         }
 
 
