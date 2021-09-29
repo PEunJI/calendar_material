@@ -3,6 +3,7 @@ package com.example.calendar
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,6 @@ class OnedaySchedulesFragment : Fragment() {
         }
 
 
-
     }
 
     override fun onCreateView(
@@ -44,9 +44,7 @@ class OnedaySchedulesFragment : Fragment() {
         val view = binding.root
 
 
-
-
-        //calednarFragment에서 보낸 데이터 받기 
+        //calednarFragment에서 보낸 데이터 받기
         var holidayTitle: String? = ""
         if (arguments != null) {
             holidayTitle = arguments?.getString("holidayTitle", "")
@@ -54,8 +52,6 @@ class OnedaySchedulesFragment : Fragment() {
         //제목(클릭한 날짜)달기
         binding.txtSelectedDate.text =
             "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일 " + "${holidayTitle}"
-
-
 
 
         myViewModel.updateOneDaySchedule(requireActivity())

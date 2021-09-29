@@ -198,8 +198,8 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         BaseActivity.fragmentManager = supportFragmentManager
         val fragmentTransaction = BaseActivity.fragmentManager!!.beginTransaction()
         fragmentTransaction.replace(R.id.frame, fragment, tag).addToBackStack(null).commit()
-
     }
+
 
     fun replaceFragment(fragment: Fragment, tag: String,bundle: Bundle) {
         BaseActivity.fragmentManager = supportFragmentManager
