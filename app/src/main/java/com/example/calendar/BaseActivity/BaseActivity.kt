@@ -131,6 +131,8 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     //커스텀 툴바 메뉴 눌렀을 때
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var thisFragment = supportFragmentManager.findFragmentById(R.id.frame)
+
         when (item.itemId) {
             //새로고침 버튼(오늘날짜에 원이 찍힌 캘린더로이동)
             R.id.toolbar_today ->
@@ -152,7 +154,8 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //+버튼
             R.id.toolbar_plus ->
                 //plus 눌렀을 때 달력 프래그먼트면 오늘 날짜로 일정입력 bottomfragment 띄우
-                if (getFragment("calendar") is CalendarFragment) {
+              //  if (getFragment("calendar") is CalendarFragment) {
+                if(thisFragment is CalendarFragment){
                     val bottomSheet = ScheduleEnrollFragment()
                     bottomSheet.apply {
                         arguments = Bundle().apply {
@@ -161,6 +164,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             putString("day", calendar.get(Calendar.DATE).toString())
                         }
                     }.show(supportFragmentManager, bottomSheet.tag)
+                    Log.e("datecheckeeeee","calendar come "+calendar.get(Calendar.DATE).toString())
                 }
                 //onedayshcedulefragment면, 그날 날짜로 bottomfragment 띄우
                 else {
@@ -171,6 +175,8 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             putString("month", (CalendarFragment.selctedDate.month + 1).toString())
                             putString("day", CalendarFragment.selctedDate.day.toString())
                         }
+                        Log.e("datecheckeeeee","else come "+CalendarFragment.selctedDate.day.toString())
+
                     }.show(supportFragmentManager, bottomSheet.tag)
                 }
 

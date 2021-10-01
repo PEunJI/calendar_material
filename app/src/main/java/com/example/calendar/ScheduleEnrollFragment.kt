@@ -47,6 +47,8 @@ class ScheduleEnrollFragment : BottomSheetDialogFragment() {
         mYear = arguments?.getString("year")!!.toInt()
         mMonth = arguments?.getString("month")!!.toInt()
         mDay = arguments?.getString("day")!!.toInt()
+
+        Log.e("datecheckeeeee",mDay.toString())
     }
 
 
