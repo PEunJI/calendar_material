@@ -123,10 +123,10 @@ class KakaoLogin : AppCompatActivity() {
                     //decorator에 쓸 holidayDateList 만들기
                     for (i in holidaysList) {
                         var holidayDate = i.locdate.toString()
-                        var year = holidayDate.substring(0, 4).toInt()
-                        var month = holidayDate.substring(4, 6).toInt() - 1
+                        var year = holidayDate.substring(0,4).toInt()
+                        var month = holidayDate.substring(4,6).toInt()-1
                         var day = holidayDate.substring(6).toInt()
-                        holidayDateList.add(CalendarDay.from(year, month, day))
+                        holidayDateList.add(CalendarDay.from(year,month, day))
                     }
                 }
 

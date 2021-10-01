@@ -37,7 +37,7 @@ class OnedaySchedulesFragment : Fragment() {
         binding = ActivityOnedaySchedulesBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        //calednarFragment에서 보낸 데이터 받기 
+        //calednarFragment에서 보낸 데이터 받
         var holidayTitle :String? = ""
         if (arguments != null) {
             holidayTitle = arguments?.getString("holidayTitle","")
