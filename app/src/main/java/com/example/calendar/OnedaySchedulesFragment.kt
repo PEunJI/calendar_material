@@ -8,24 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.calendar.Adapter.LinearLayoutManagerWrapper
 import com.example.calendar.Adapter.RecyclerViewAdapter
 import com.example.calendar.CalendarFragment.Companion.selctedDate
 import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import java.text.SimpleDateFormat
-import java.util.*
 
-class OnedaySchedulesFragment : Fragment() {
+class OnedaySchedulesFragment() : Fragment() {
     private lateinit var binding: ActivityOnedaySchedulesBinding
     private lateinit var get_context: Activity
-    private lateinit var selectedDate: String
-    private lateinit var recyclerViewAdapter: RecyclerViewAdapter
+    private var recyclerViewAdapter: RecyclerViewAdapter? = null
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Activity) {
@@ -43,7 +37,7 @@ class OnedaySchedulesFragment : Fragment() {
         binding = ActivityOnedaySchedulesBinding.inflate(inflater, container, false)
         val view = binding.root
 
-
+        Log.e("selctedDate", "2. createScheduleFragment")
         //calednarFragment에서 보낸 데이터 받기
         var holidayTitle: String? = ""
         if (arguments != null) {
@@ -51,17 +45,18 @@ class OnedaySchedulesFragment : Fragment() {
         }
         //제목(클릭한 날짜)달기
         binding.txtSelectedDate.text =
-            "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일 " + "${holidayTitle}"
-
-
+//            "" + CalendarFragment.selctedDate.year + "년 " + (CalendarFragment.selctedDate.month + 1) + "월 " + CalendarFragment.selctedDate.day + "일 " + "${holidayTitle}"
+            "" + selctedDate.year + "년 " + (selctedDate.month + 1) + "월 " + selctedDate.day + "일 " + "${holidayTitle}"
+        Log.e("selctedDate", "3. day in onedayScheduleFrag: " + selctedDate.day.toString())
         myViewModel.updateOneDaySchedule(requireActivity())
 
-
-        //recyclerview 달기
-        recyclerViewAdapter = RecyclerViewAdapter(requireActivity().application, requireActivity())
-        binding.recyclerView.adapter = recyclerViewAdapter
-        binding.recyclerView.layoutManager = LinearLayoutManagerWrapper(get_context)
-
+        if (recyclerViewAdapter == null) {
+            //recyclerview 달기
+            recyclerViewAdapter =
+                RecyclerViewAdapter(requireActivity().application, requireActivity())
+            binding.recyclerView.adapter = recyclerViewAdapter
+            binding.recyclerView.layoutManager = LinearLayoutManagerWrapper(get_context)
+        }
 
         //3. 뷰모델(onedaylivedata)에 값이 변경될 때 할 행동
         //바뀐 oneDayLivedata을 Listadapter에 알려준다
@@ -73,10 +68,11 @@ class OnedaySchedulesFragment : Fragment() {
         //그래서 it==empty 일 때는 그냥 notifyItemRemoved을 넣어줬다.
         myViewModel.oneDayLivedata.observe(viewLifecycleOwner, Observer {
             if (it.isNullOrEmpty()) {
-                recyclerViewAdapter.notifyItemRemoved(0)
+                recyclerViewAdapter!!.notifyItemRemoved(0)
                 //하나 남은 아이템을 삭제 하는 것이므로
                 //항상 맨 첫번째 아이템이 삭제됨 . position에 0을 넣어준다.
-            } else recyclerViewAdapter.submitList(it)
+            } else recyclerViewAdapter!!.submitList(it)
+            Log.e("viewpager2", "observer")
 
 
         })
@@ -86,18 +82,9 @@ class OnedaySchedulesFragment : Fragment() {
 
     }
 
-    //일정을 편집할 때 마다 서버에서 새로 데이터를 받아와서 listadpater에게 알려줌
-    override fun onResume() {
-        super.onResume()
-
-    }
-
 
     companion object {
-        fun newInstance(): Fragment {
 
-            return OnedaySchedulesFragment()
-        }
 
     }
 

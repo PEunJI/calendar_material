@@ -1,13 +1,13 @@
 package com.example.calendar
 
 import android.app.Activity
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.calendar.Adapter.Schedule
 import com.example.calendar.Adapter.Schedule.Companion.MutablescheduleList
+import com.example.calendar.CalendarFragment.Companion.selctedDate
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.MasterApplication
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -98,7 +98,8 @@ class MyViewModel : ViewModel() {
     하루 스케줄에 관한 부분 (oneDayMutable)
      */
     fun updateOneDaySchedule(activity: Activity) {
-        Schedule.MutablescheduleList.clear()
+        Log.e("selctedDate","updateOneDaySchedule come")
+        MutablescheduleList.clear()
         _allScheduls.value?.clear()
         _oneDayLivedata.value?.clear()
         //모든 일정을 받아와서 일정 하나하나를 shceduleList객체로 만든 다음 그 객체를 MutablescheduleList(모든스케줄이있는 mutableList)에 추가한다.
@@ -128,15 +129,10 @@ class MyViewModel : ViewModel() {
             }
             Log.e("delete", "서버에서 다시 일정 받아오기 완료-oneday")
 
-        }
-        _allScheduls.postValue(MutablescheduleList)
-        try {
-            for (i in allScheduls.value!!.iterator())
-                Log.e("revise", "" + i.title)
-        }
-        catch (e: java.lang.Exception){}
 
+        }
         //MutablescheduleList을 이용해서 선택한 날짜의 일정리스트만 만든다
+        _allScheduls.postValue(MutablescheduleList)
         getThedayFromAll()
         Log.e("delete", "선택한 날짜의 일정리스트만 만든다")
 
@@ -147,22 +143,25 @@ class MyViewModel : ViewModel() {
 
     fun getThedayFromAll() {
         //선택한 날짜의 schedulelist만 따로 담은 mutablelist
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+       // val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+
         val tempList = arrayListOf<Schedule>()
+      //  tempList.clear()
         //selectedDate(선택한날짜)가 MutablescheduleList(전체 일정)의 시작, 종료 날짜 사이에 있으면 그날의 일정리스트(tempList)에 추가한다.
-        for (i in Schedule.MutablescheduleList) {
+        for (i in MutablescheduleList) {
             val start = formatter.parse(i.start)
             val end = formatter.parse(i.end)
-
-            if (CalendarFragment.selctedDate.isInRange(CalendarDay(start), CalendarDay(end))) {
-                //_oneDayLivedata.value!!.add(i)
+            if (selctedDate.isInRange(CalendarDay(start), CalendarDay(end))) {
                 tempList.add(i)
             }
+            Log.e("selctedDate","4. selctedDate in getTheDayFromAll: "+ selctedDate)
         }
         //완성된 일정리스트(tempList)를 mutablelivedata에 넣어준다.
         _oneDayLivedata.postValue(tempList)
 
     }
+
 
 }
 

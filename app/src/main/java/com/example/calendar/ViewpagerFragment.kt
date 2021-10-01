@@ -7,23 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.example.calendar.CalendarFragment.Companion.realSelectedDate
 import com.example.calendar.CalendarFragment.Companion.selctedDate
-import com.example.calendar.databinding.ActivityOnedaySchedulesBinding
+import com.example.calendar.ViewpagerFragment.Companion.TenonedaySchedulesFrags
 import com.example.calendar.databinding.ViewpagerfragBinding
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import com.prolificinteractive.materialcalendarview.CalendarUtils
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.log10
 
 class ViewpagerFragment : Fragment() {
     lateinit var binding: ViewpagerfragBinding
-    private val START_POSITION = 50
-
+    private val START_POSITION = 5
+    private var pagerAdapter: FragmentPagerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,50 +29,59 @@ class ViewpagerFragment : Fragment() {
         binding = ViewpagerfragBinding.inflate(inflater, container, false)
         val view = binding.root
 
-
         //어댑터 초기화
-        val pagerAdapter = FragmentPagerAdapter(requireActivity())
+        pagerAdapter = FragmentPagerAdapter(requireActivity()).apply {
+            makeScheduleFragsArray()
+        }
 
+        Log.e("selctedDate", "viewpager2 adapter Attached")
         //어댑터 붙이기
         binding.viewPager.adapter = pagerAdapter
         binding.viewPager.setCurrentItem(START_POSITION, false)
+       // binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
 
         return view
+
     }
 
-}
+    companion object {
+        val TenonedaySchedulesFrags: ArrayList<OnedaySchedulesFragment> = arrayListOf()
 
+
+    }
+}
 
 class FragmentPagerAdapter(fragment: FragmentActivity) :
     FragmentStateAdapter(fragment) {
-
     override fun getItemCount(): Int {
-        return 100
+        return TenonedaySchedulesFrags.size
     }
 
-    override fun createFragment(position: Int): OnedaySchedulesFragment {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = getItemId(position)
-        selctedDate = CalendarDay.from(calendar)
-        Log.e("viewpager2","position: "+position+" secltedDate: "+ selctedDate)
-        return OnedaySchedulesFragment()
+    override fun createFragment(position: Int): Fragment {
+        val selectedDateCalendar = realSelectedDate.calendar
+        val tempCalendar = Calendar.getInstance()
+        tempCalendar.time = selectedDateCalendar.time
+        tempCalendar.add(Calendar.DATE, (position - 5))
+        selctedDate = CalendarDay.from(tempCalendar)
+        Log.e("selctedDate", "position" + position.toString())
+
+        return TenonedaySchedulesFrags[position]
     }
 
-    override fun getItemId(position: Int): Long {
+    fun makeScheduleFragsArray() {
+        TenonedaySchedulesFrags.clear()
+        for (i in -5..5) {
+            val selectedDateCalendar = realSelectedDate.calendar
+            val tempCalendar = Calendar.getInstance()
+            tempCalendar.time = selectedDateCalendar.time
+            tempCalendar.add(Calendar.DATE, i)
+            selctedDate = CalendarDay.from(tempCalendar)
+            Log.e("selctedDate", "1. selctedDate: " + selctedDate.toString())
+            TenonedaySchedulesFrags.add(OnedaySchedulesFragment())
+            notifyItemInserted(TenonedaySchedulesFrags.size - 1)
+        }
 
-        var selectedDateCalendar = selctedDate.calendar
-        var ss = Calendar.getInstance()
-        ss.time=selectedDateCalendar.time
-        var sdff= position-50
-        ss.add(Calendar.DATE, sdff)
-
-        Log.e("chekcckckck","selctedDate.calendar: "+selectedDateCalendar.toString())
-        Log.e("viewpager2","position: "+position+" return getItemID: "+selectedDateCalendar.timeInMillis)
-        return ss.timeInMillis
     }
 
-    override fun containsItem(itemId: Long): Boolean {
-        return itemId is Long
-    }
 }
