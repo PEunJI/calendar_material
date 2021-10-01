@@ -45,10 +45,10 @@ class CalendarFragment : Fragment() {
         //캘린더뷰에 날짜별로 색상 다르게 하는 decorator달기
         binding.calendarView.addDecorators(
             EventDecorator(myViewModel.calendarDotsAll),
+            AlldayDecorator(),
             SundayDecorator(),
             SaturdayDecorator(),
             TodayDecorator(get_context),
-            AlldayDecorator(),
             HolidayDecorator(holidayDateList)
         )
 
