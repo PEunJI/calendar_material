@@ -1,7 +1,11 @@
 package com.example.calendar
 
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.example.calendar.Adapter.Schedule
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.ColoredDate.*
 import com.example.calendar.Dots.GetHolidays.Companion.holidaysList
@@ -16,11 +21,14 @@ import com.example.calendar.databinding.CalendarFragBinding
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.holidayDateList
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
 import com.prolificinteractive.materialcalendarview.CalendarDay
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class CalendarFragment : Fragment() {
     private lateinit var binding: CalendarFragBinding
     private lateinit var get_context: Activity
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -96,11 +104,6 @@ class CalendarFragment : Fragment() {
 
 
     companion object {
-        fun newInstance(): Fragment {
-
-            return CalendarFragment()
-        }
-
         var selctedDate = CalendarDay.today()
 
     }

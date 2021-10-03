@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+
+
     <application
         android:name=".kakaoLogin.MasterApplication"
         android:allowBackup="true"
@@ -13,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Calendar"
         android:usesCleartextTraffic="true">
+
+        <receiver android:name=".AlarmRecevier"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
 
         <activity
             android:name=".BaseActivity.BaseActivity"
@@ -39,6 +46,7 @@
                     android:scheme="kakao20bda91f9ba354f86d1df729923ed50a" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
