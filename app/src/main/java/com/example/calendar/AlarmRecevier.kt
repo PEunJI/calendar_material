@@ -1,6 +1,5 @@
 package com.example.calendar
 
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,6 +25,7 @@ class AlarmRecevier : BroadcastReceiver() {
         notificationManager =
             context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        //버전에 따라 builder 설정
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
@@ -38,16 +38,18 @@ class AlarmRecevier : BroadcastReceiver() {
             builder = NotificationCompat.Builder(context)
         }
 
-        val intent = Intent(context, BaseActivity::class.java)
+        val intentToBase = Intent(context, BaseActivity::class.java)
         val pendingIntent =
-            PendingIntent.getActivity(context, 101, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(context, 101, intentToBase, PendingIntent.FLAG_UPDATE_CURRENT)
 
+        val title = intent!!.getStringExtra("title")
+        val alarmDate = intent.getStringExtra("alarmDate")
 
         //노티 설정
         val notification = builder
-            .setSmallIcon(android.R.drawable.ic_menu_my_calendar)
-            .setContentTitle("title") //제목
-            .setContentText("content") //내용
+            .setSmallIcon(R.mipmap.ic_noti_calendar)
+            .setContentTitle(title) //제목
+            .setContentText(alarmDate) //내용
             .setAutoCancel(true) //알림 클릭 시 삭
             .setShowWhen(true) //알림 온 시간
             .setPriority(NotificationCompat.PRIORITY_HIGH)

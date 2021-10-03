@@ -1,7 +1,6 @@
 package com.example.calendar.BaseActivity
 
 import android.app.AlarmManager
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -27,7 +26,6 @@ import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.KakaoLogin.Companion.myViewModel
 import com.google.android.material.navigation.NavigationView
 import com.kakao.sdk.user.UserApiClient
-import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,8 +33,9 @@ import java.util.*
 class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     var calendarFragment = CalendarFragment()
     private lateinit var binding: ActivityBaseBinding
-    lateinit var notificationManager: NotificationManager
     lateinit var alarmManager: AlarmManager
+    val today = Calendar.getInstance().time
+    val scheduleTimeArray = mutableListOf<Date>()
 
     @InternalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,9 +47,10 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //초기 프래그먼트 캘린더프래그먼트로 지정
         replaceFragment(calendarFragment, "calendar")
 
-
+        //allSchedules가 바뀔때마다 알림 새로 설정
         myViewModel.allScheduls.observe(this, androidx.lifecycle.Observer {
             setAlarm()
+            Log.e("alarm", "observer come")
         })
 
         /**
@@ -212,41 +212,70 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
         var fragmentManager: FragmentManager? = null
-        val scheduleTimeArray = mutableListOf<Date>()
-
     }
 
+    //알람 설정
     fun setAlarm() {
-        val today = Calendar.getInstance().time
         alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        //날짜지정
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        for (i in Schedule.MutablescheduleList) {
-            val cal = Calendar.getInstance()
-            cal.time = formatter.parse(i.start)
-            BaseActivity.scheduleTimeArray.add(cal.time)
-        }
-        scheduleTimeArray.add(today)
-        scheduleTimeArray.sort()
-        //
+        setStartDateWithToday()
 
-        val intent = Intent(this, AlarmRecevier::class.java)
-        val pendingIntent =
-            PendingIntent.getBroadcast(this, 101, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        //다음 일정의 인덱스 찾기
         var nextScheduleIndex = scheduleTimeArray.indexOf(today) + 1
         try {
-            val a = scheduleTimeArray[nextScheduleIndex] //다음일
-            val b = Calendar.getInstance()
-            b.time = a
-            b.set(a.year + 1900, a.month, a.date, 9, 0)
-            b.add(Calendar.DATE, -1)
-            alarmManager.set(AlarmManager.RTC_WAKEUP, b.timeInMillis, pendingIntent)
-            Log.e("alarm", b.time.toString())
+            val nextScheduleDate = scheduleTimeArray[nextScheduleIndex] //다음일
+            val intentToReceiver = Intent(this, AlarmRecevier::class.java)
+
+            putIntent(nextScheduleDate,intentToReceiver)
+
+            val pendingIntent =
+                PendingIntent.getBroadcast(this, 101, intentToReceiver, PendingIntent.FLAG_UPDATE_CURRENT)
+            val receiveTime = Calendar.getInstance()
+            receiveTime.time = nextScheduleDate
+            receiveTime.add(Calendar.DATE, -1) //다음 일정의 하루 전날
+            receiveTime.set(Calendar.HOUR_OF_DAY, 9) //9시 0분
+            receiveTime.set(Calendar.MINUTE, 0)
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, receiveTime.timeInMillis, pendingIntent)
+            Log.e("alarm", receiveTime.time.toString())
 
         } catch (e: java.lang.Exception) {
             Log.e("alarm", "catch")
 
+        }
+    }
+
+    fun setStartDateWithToday() {
+        //start날짜만 가져오기 + 오늘 날짜 + 정렬
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        //MutablescheduleList(모든 schedule객체가 들어있는 livedata)에서 start날짜만 scheduleTimeArray에 넣는다.
+        for (i in Schedule.MutablescheduleList) {
+            val cal = Calendar.getInstance()
+            cal.time = formatter.parse(i.start)
+            scheduleTimeArray.add(cal.time)
+        }
+        //오늘 날짜를 넣고 정렬한다
+        scheduleTimeArray.add(today)
+        scheduleTimeArray.sort()
+        //
+    }
+
+    fun putIntent(nextScheduleDate: Date, intent: Intent) {
+        //제목과 날짜를 찾아서 intent에 보낸다
+        for (i in Schedule.MutablescheduleList) {
+            val formatter = SimpleDateFormat("yyyy-MM-dd")
+            val date = formatter.parse(i.start)
+            if (date == nextScheduleDate) {
+                val title = "title: " + i.title!!
+                val alarmDate = i.start + " ~ " + i.end
+
+                intent.apply {
+                    this.putExtra("title", title)
+                    this.putExtra("alarmDate", alarmDate)
+                }
+                Log.e("alarm", title+alarmDate)
+            }
         }
     }
 
