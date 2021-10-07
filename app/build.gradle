@@ -66,6 +66,8 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
     implementation 'com.facebook.stetho:stetho-js-rhino:1.5.1'
+    //lotti
+    implementation 'com.airbnb.android:lottie:4.2.0'
 }
 repositories {
 //    mavenCentral()

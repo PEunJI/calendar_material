@@ -3,9 +3,11 @@ package com.example.calendar.kakaoLogin
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.calendar.BaseActivity.BaseActivity
@@ -18,6 +20,7 @@ import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.prolificinteractive.materialcalendarview.CalendarDay
+import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.*
 import retrofit2.Response
 import java.security.MessageDigest
@@ -26,31 +29,37 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 class KakaoLogin : AppCompatActivity() {
     private lateinit var binding: ActivityKakaoLoginBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         binding = ActivityKakaoLoginBinding.inflate(layoutInflater)
+       runOnUiThread {
+           binding.lotti.playAnimation()
+           binding.lotti.loop(true)
+       }
         setContentView(binding.root)
+
         updateKakaoLoginUi()
         //해쉬키
-        try {
-            val info = packageManager.getPackageInfo(
-                "com.example.calendar",
-                PackageManager.GET_SIGNATURES
-            )
-            for (signature in info.signatures) {
-                val md: MessageDigest = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val str: String = Base64.encodeToString(md.digest(), Base64.DEFAULT)
-                Log.d("KeyHash:", str)
-            }
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
+//        try {
+//            val info = packageManager.getPackageInfo(
+//                "com.example.calendar",
+//                PackageManager.GET_SIGNATURES
+//            )
+//            for (signature in info.signatures) {
+//                val md: MessageDigest = MessageDigest.getInstance("SHA")
+//                md.update(signature.toByteArray())
+//                val str: String = Base64.encodeToString(md.digest(), Base64.DEFAULT)
+//                Log.d("KeyHash:", str)
+//            }
+//        } catch (e: NoSuchAlgorithmException) {
+//            e.printStackTrace()
+//        } catch (e: PackageManager.NameNotFoundException) {
+//            e.printStackTrace()
+//        }
         //
 
 
@@ -102,14 +111,14 @@ class KakaoLogin : AppCompatActivity() {
 
 
     private fun updateKakaoLoginUi() {
+
         UserApiClient.instance.me { user, error ->
             //로그인이 되어 있을 때
             if (user != null) {
                 /**점찍기**/
                 //로그인이 되어 있으면 retrofit service를 갱신?새로만든?다.
                 (application as MasterApplication).createRetrofit(user_id)
-                runBlocking {
-
+                runBlocking{
                     //checkToken작업이 완료된 후에 service.getCalendar작업을 한다
                     checkTokenJob.join()
                     myViewModel.getAlldayDots(this@KakaoLogin)
@@ -117,19 +126,17 @@ class KakaoLogin : AppCompatActivity() {
                     //공휴일 받아오기
                     CoroutineScope(Dispatchers.IO).async {
                         GetHolidays().getHolidays()
-
                     }.await()
-
                     //decorator에 쓸 holidayDateList 만들기
                     for (i in holidaysList) {
                         var holidayDate = i.locdate.toString()
-                        var year = holidayDate.substring(0,4).toInt()
-                        var month = holidayDate.substring(4,6).toInt()-1
+                        var year = holidayDate.substring(0, 4).toInt()
+                        var month = holidayDate.substring(4, 6).toInt() - 1
                         var day = holidayDate.substring(6).toInt()
-                        holidayDateList.add(CalendarDay.from(year,month, day))
+                        holidayDateList.add(CalendarDay.from(year, month, day))
+
                     }
                 }
-
 
                 startMainActivity(
                     user.kakaoAccount!!.profile!!.thumbnailImageUrl!!,
@@ -137,6 +144,7 @@ class KakaoLogin : AppCompatActivity() {
                 )
             } //로그인 실패 시
             else {
+                binding.profileImage.visibility = View.VISIBLE
                 binding.btnKakaoLogin.visibility = View.VISIBLE
                 binding.profileImage.setImageResource(R.drawable.ic_calendar)
             }
