@@ -9,7 +9,10 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical"
     app:mcv_selectionColor="#CDDC39"
-    app:mcv_showOtherDates="all" />
+    app:mcv_showOtherDates="all"
+    app:mcv_arrowColor="#FF9800"
+    app:mcv_weekDayTextAppearance="@style/TextAppearance.AppCompat.Small"
+    app:mcv_headerTextAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
 
 

@@ -10,9 +10,12 @@
         <entry key="..\:/01.eunji/02.CalenderProject/01.Calendar/calendar_material/app/src/main/res/layout/fragment_schedule_enroll.xml" value="0.15780141843971632" />
         <entry key="..\:/Users/YJ/Desktop/only/Calendar/calendar_material(2)/app/src/main/res/layout/activity_kakao_login.xml" value="0.1" />
         <entry key="..\:/Users/YJ/Desktop/only/Calendar/calendar_material(2)/app/src/main/res/layout/calendar_frag.xml" value="0.20697463768115942" />
+        <entry key="app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.125" />
         <entry key="app/src/main/res/drawable/ic_calendar.xml" value="0.15260416666666668" />
+        <entry key="app/src/main/res/drawable/ic_circular_counterclockwise_arrow_rotation.xml" value="0.17864583333333334" />
         <entry key="app/src/main/res/drawable/ic_noti_calendar_background.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/ic_noti_calendar_foreground.xml" value="0.18697916666666667" />
+        <entry key="app/src/main/res/drawable/ic_plus.xml" value="0.17864583333333334" />
         <entry key="app/src/main/res/drawable/todaybgr.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/layout/activity_all_schedules.xml" value="0.14114583333333333" />
         <entry key="app/src/main/res/layout/activity_base.xml" value="0.24728260869565216" />
@@ -20,7 +23,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.125" />
         <entry key="app/src/main/res/layout/activity_notification.xml" value="0.1625" />
         <entry key="app/src/main/res/layout/activity_oneday_schedules.xml" value="0.24728260869565216" />
-        <entry key="app/src/main/res/layout/calendar_frag.xml" value="0.17083333333333334" />
+        <entry key="app/src/main/res/layout/calendar_frag.xml" value="0.375" />
         <entry key="app/src/main/res/layout/custom_toolbar.xml" value="0.14114583333333333" />
         <entry key="app/src/main/res/layout/fragment_all_schedules.xml" value="0.13229166666666667" />
         <entry key="app/src/main/res/layout/fragment_revise_enroll.xml" value="0.15443840579710144" />

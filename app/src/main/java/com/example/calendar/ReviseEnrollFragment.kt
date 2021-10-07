@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
-import com.example.calendar.Picker.DatePicker
 import com.example.calendar.Picker.ReviseDatePicker
 import com.example.calendar.Picker.ReviseTimePicker
 import com.example.calendar.ScheduleEnrollFragment.Companion.isRightRange
@@ -22,7 +21,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ReviseEnrollFragment : BottomSheetDialogFragment() {
