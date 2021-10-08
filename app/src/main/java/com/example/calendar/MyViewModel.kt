@@ -71,6 +71,8 @@ class MyViewModel : ViewModel() {
                 KakaoLogin.formatter.parse(i.dateEnd)
             )
         }
+        _calendarDotsAll.postValue(tempHash)
+
         Log.e("delete", "dots//새로 데이터 받아오면 이 로그 찍힘") //새로 데이터 받아오면 이 로그 찍힘
 
     }
@@ -84,14 +86,12 @@ class MyViewModel : ViewModel() {
             //currentday를 calendarDotsAll에 추가한다
             //livedata에 postvalue나 setvalue를 해줘야만 observer가 작동한다고 한다.
             tempHash.add((CalendarDay(currentDay)))
-            _calendarDotsAll.postValue(tempHash)
+//            _calendarDotsAll.postValue(tempHash)
             //currentday의 다음날을 다시 currentday로 초기화해주고 while문반복
             temp_day.time = currentDay
             temp_day.add(java.util.Calendar.DAY_OF_MONTH, 1) //currentday의 다음날
             currentDay = temp_day.time
         }
-
-
     }
 
     /**
