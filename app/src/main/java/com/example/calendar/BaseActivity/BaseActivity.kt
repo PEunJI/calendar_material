@@ -222,7 +222,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         //다음 일정의 인덱스 찾기
-        var nextScheduleIndex = scheduleTimeArray.indexOf(today) + 1
+        var nextScheduleIndex = (scheduleTimeArray.indexOf(today)) + 1
         try {
             val nextScheduleDate = scheduleTimeArray[nextScheduleIndex] //다음일
             val intentToReceiver = Intent(this, AlarmRecevier::class.java)
@@ -237,8 +237,11 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             receiveTime.set(Calendar.HOUR_OF_DAY, 9) //9시 0분
             receiveTime.set(Calendar.MINUTE, 0)
 
-            alarmManager.set(AlarmManager.RTC_WAKEUP, receiveTime.timeInMillis, pendingIntent)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, receiveTime.timeInMillis, pendingIntent)
+            Log.e("alarm","nextScheduleDate"+nextScheduleDate.toString())
             Log.e("alarm", receiveTime.time.toString())
+            Log.e("alarm", scheduleTimeArray.indexOf(today).toString())
+            Log.e("alarm", nextScheduleIndex.toString())
 
         } catch (e: java.lang.Exception) {
             Log.e("alarm", "catch")

@@ -2,7 +2,9 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#F6E3AA"
+    android:layout_margin="15dp">
 
     <LinearLayout
         android:padding="10dp"
@@ -12,9 +14,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="제목"/>
+        android:text="제목"
+        android:textColor="@color/black"/>
 
     <TextView
+        android:textColor="@color/black"
         android:layout_marginLeft="10dp"
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -29,12 +33,14 @@
         android:orientation="horizontal">
 
         <TextView
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="시간시작"/>
 
 
     <TextView
+        android:textColor="@color/black"
         android:layout_marginLeft="10dp"
         android:id="@+id/start"
         android:layout_width="match_parent"
@@ -49,12 +55,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <TextView
+    <TextView android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="종료시간"/>
 
     <TextView
+        android:textColor="@color/black"
         android:layout_marginLeft="10dp"
         android:id="@+id/end"
         android:layout_width="match_parent"
@@ -64,12 +71,14 @@
 
 
     <TextView
+        android:textColor="@color/black"
         android:padding="10dp"
         android:text="메모"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
+        android:textColor="@color/black"
         android:text="메모없"
         android:padding="10dp"
         android:id="@+id/memo"
