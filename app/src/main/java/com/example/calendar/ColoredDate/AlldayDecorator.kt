@@ -23,7 +23,7 @@ class AlldayDecorator : DayViewDecorator {
         //view.addSpan(StyleSpan(Typeface.BOLD))
         //나중에 다크모드/라이트모드 설정 해줘야함
         //일단 그냥 글자 화이트로 바꿔놓음
-        view.addSpan(ForegroundColorSpan(Color.WHITE))
+       // view.addSpan(ForegroundColorSpan(Color.WHITE))
     }
 
 }

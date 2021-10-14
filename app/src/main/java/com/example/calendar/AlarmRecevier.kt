@@ -47,7 +47,7 @@ class AlarmRecevier : BroadcastReceiver() {
 
         //노티 설정
         val notification = builder
-            .setSmallIcon(R.mipmap.ic_noti_calendar)
+            .setSmallIcon(R.drawable.ic_noti)
             .setContentTitle(title) //제목
             .setContentText(alarmDate) //내용
             .setAutoCancel(true) //알림 클릭 시 삭

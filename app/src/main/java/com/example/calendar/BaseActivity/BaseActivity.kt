@@ -48,10 +48,10 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         replaceFragment(calendarFragment, "calendar")
 
         //allSchedules가 바뀔때마다 알림 새로 설정
-        myViewModel.allScheduls.observe(this, androidx.lifecycle.Observer {
-            setAlarm()
-            Log.e("alarm", "observer come")
-        })
+//        myViewModel.allScheduls.observe(this, androidx.lifecycle.Observer {
+//           // setAlarm()
+//            Log.e("alarm", "observer come")
+//        })
 
         /**
          * 툴바사용
@@ -129,7 +129,7 @@ class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     startActivity(intent) //현재 액티비티 재실행 실시
                     overridePendingTransition(0, 0) //인텐트 애니메이션 없애기
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                   Log.e("resetItem",e.printStackTrace().toString() )
                 }
             //allSchedules 버튼
             R.id.toolbar_schedules ->
