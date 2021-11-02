@@ -1,13 +1,9 @@
 package com.example.calendar.kakaoLogin
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Looper
-import android.util.Base64
 import android.util.Log
 import android.view.View
-import android.view.animation.Animation
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.calendar.BaseActivity.BaseActivity
@@ -20,11 +16,8 @@ import com.example.calendar.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.*
 import retrofit2.Response
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -125,7 +118,7 @@ class KakaoLogin : AppCompatActivity() {
 
                     //공휴일 받아오기
                     CoroutineScope(Dispatchers.IO).async {
-                        GetHolidays().getHolidays()
+                        GetHolidays().getHolidays(context = this@KakaoLogin)
                     }.await()
                     //decorator에 쓸 holidayDateList 만들기
                     for (i in holidaysList) {
@@ -173,7 +166,6 @@ class KakaoLogin : AppCompatActivity() {
         lateinit var myViewModel: MyViewModel
 
         var holidayDateList = ArrayList<CalendarDay>()
-
     }
 }
 

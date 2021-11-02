@@ -12,14 +12,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.calendar.Adapter.RecyclerViewAdapter.MyViewHolder
 import com.example.calendar.BaseActivity.BaseActivity
 import com.example.calendar.ReviseEnrollFragment
 import com.example.calendar.databinding.ScheduleListBinding
 import com.example.calendar.kakaoLogin.KakaoLogin
 import com.example.calendar.kakaoLogin.MasterApplication
-import kotlinx.coroutines.*
-import okhttp3.Dispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 class RecyclerViewAdapter(val application: Application, val activity: Activity) :
     ListAdapter<Schedule, RecyclerView.ViewHolder>(OnedayDiffCallback()) {

@@ -2,6 +2,7 @@ package com.example.calendar.kakaoLogin
 
 import android.app.Application
 import android.util.Log
+import com.example.calendar.R
 import com.example.calendar.api.CalendarService
 import com.facebook.stetho.Stetho
 import com.facebook.stetho.okhttp3.StethoInterceptor
@@ -17,7 +18,7 @@ class MasterApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         //Kakaosdk init
-        KakaoSdk.init(this, "20bda91f9ba354f86d1df729923ed50a")
+        KakaoSdk.init(this, this.getString(R.string.appKey))
         //Stetho init
         Stetho.initializeWithDefaults(this)
 
@@ -42,7 +43,7 @@ class MasterApplication : Application() {
 
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://api.kumas.dev/")
+            .baseUrl(this.getString(R.string.baseURL))
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
